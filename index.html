@@ -3733,6 +3733,35 @@ if (
         document.getElementById("qModalPts").className = "modal-pts";
         document.getElementById("qModalQuestion").textContent = qData.q;
         document.getElementById("qModalQuestion").classList.remove("visible");
+        const seconds = state.currentQuestion.pts <= 500 ? 30 : 45;
+
+let timerDiv = document.getElementById("questionTimer");
+
+if (!timerDiv) {
+  timerDiv = document.createElement("div");
+  timerDiv.id = "questionTimer";
+  timerDiv.style.cssText =
+    "font-size:2rem;font-weight:900;color:#60a5fa;text-align:center;margin:12px 0;";
+  document
+    .getElementById("qModalQuestion")
+    .insertAdjacentElement("beforebegin", timerDiv);
+}
+
+clearInterval(window.questionTimerInterval);
+
+let timeLeft = seconds;
+timerDiv.textContent = `⏱ ${timeLeft}s`;
+
+window.questionTimerInterval = setInterval(() => {
+  timeLeft--;
+  timerDiv.textContent = `⏱ ${timeLeft}s`;
+
+  if (timeLeft <= 0) {
+    clearInterval(window.questionTimerInterval);
+    timerDiv.textContent = "⏱ TIME'S UP!";
+    revealAnswer();
+  }
+}, 1000);
         const ansEl = document.getElementById("qModalAnswer");
         ansEl.textContent = qData.a;
         ansEl.classList.remove("visible");
