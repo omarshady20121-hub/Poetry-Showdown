@@ -3443,12 +3443,39 @@
         const teams = Array.from({ length: numTeams }, () => []);
         const lockedTeamIdx = Math.floor(Math.random() * numTeams);
         lockedPresent.forEach((s) => teams[lockedTeamIdx].push(s));
-        let pool = [...nonLocked];
-        for (let slot = 0; slot < studentsPerTeam && pool.length > 0; slot++) {
-          for (let ti = 0; ti < numTeams && pool.length > 0; ti++) {
-            if (teams[ti].length === slot) teams[ti].push(pool.shift());
-          }
-        }
+
+let pool = [...nonLocked];
+
+// Remove Retal from normal assignment
+const retalIndex = pool.indexOf("Retal");
+const retalAvailable = retalIndex !== -1;
+
+if (retalAvailable) {
+  pool.splice(retalIndex, 1);
+}
+
+for (let slot = 0; slot < studentsPerTeam && pool.length > 0; slot++) {
+  for (let ti = 0; ti < numTeams && pool.length > 0; ti++) {
+
+    // Never add random students to the locked team
+    if (ti === lockedTeamIdx) continue;
+
+    if (teams[ti].length === slot) {
+      teams[ti].push(pool.shift());
+    }
+  }
+}
+
+// Only add Retal if the locked team absolutely needs one more member
+const otherTeams = teams.filter((_, i) => i !== lockedTeamIdx);
+const maxSize = Math.max(...otherTeams.map(t => t.length));
+
+if (
+  retalAvailable &&
+  teams[lockedTeamIdx].length < maxSize - 1
+) {
+  teams[lockedTeamIdx].push("Retal");
+}
         teams.forEach((t) => shuffle(t));
         const sequence = [];
         teams.forEach((members, ti) =>
