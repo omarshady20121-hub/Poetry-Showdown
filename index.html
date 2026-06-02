@@ -4083,11 +4083,27 @@ window.questionTimerInterval = setInterval(() => {
         const q = POWER_ROUND_QUESTIONS.find((x) => x.num === num);
         if (!q || state.prUsed[num]) return;
         state.prCurrentQuestion = q;
+        clearInterval(window.prTimer);
+
+let timeLeft = q.pts <= 500 ? 30 : 45;
+
+window.prTimer = setInterval(() => {
+  timeLeft--;
+
+  const timerEl = document.getElementById("prTimer");
+  if (timerEl) timerEl.textContent = `⏱ ${timeLeft}s`;
+
+  if (timeLeft <= 0) {
+    clearInterval(window.prTimer);
+    revealPRAnswer();
+  }
+}, 1000);
         state.activePowerEffect = null;
         state.activePowerTeamIdx = -1;
         hidePowerBanner();
         document.getElementById("prQuestionCard").innerHTML = `
     <div class="pr-q-num">Question ${q.num} · ${q.pts} pts</div>
+    <div id="prTimer">⏱ ${q.pts <= 500 ? 30 : 45}s</div>
     <div class="pr-q-text">${escHtml(q.q)}</div>
     <div class="pr-answer-box" id="prAnswerBox">${escHtml(q.a)}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
