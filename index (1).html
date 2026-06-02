@@ -1,0 +1,4666 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Biology Showdown</title>
+    <style>
+      :root {
+        --bg: #071120;
+        --panel: #0f1f35;
+        --card: #142742;
+        --accent: #3b82f6;
+        --accent2: #60a5fa;
+        --text: #f8fafc;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --gray: #64748b;
+        --border: rgba(59, 130, 246, 0.2);
+        --gold: #f59e0b;
+        --purple: #8b5cf6;
+        --green: #22c55e;
+        --red: #ef4444;
+        --bio: #10b981;
+        --bio2: #34d399;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 13px 28px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: none;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s,
+          opacity 0.15s;
+        white-space: nowrap;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.92;
+      }
+      .btn:active {
+        transform: translateY(0);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent) 0%, #1d4ed8 100%);
+        color: #fff;
+        box-shadow: 0 4px 18px rgba(59, 130, 246, 0.4);
+      }
+      .btn-success {
+        background: linear-gradient(135deg, var(--success) 0%, #15803d 100%);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+      }
+      .btn-danger {
+        background: linear-gradient(135deg, var(--danger) 0%, #991b1b 100%);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+      }
+      .btn-gold {
+        background: linear-gradient(135deg, var(--gold) 0%, #d97706 100%);
+        color: #000;
+        font-weight: 900;
+        box-shadow: 0 4px 22px rgba(245, 158, 11, 0.4);
+      }
+      .btn-gray {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .btn-purple {
+        background: linear-gradient(135deg, var(--purple) 0%, #5b21b6 100%);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+      }
+      .btn-bio {
+        background: linear-gradient(135deg, var(--bio) 0%, #047857 100%);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .icon-btn {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition:
+          background 0.2s,
+          transform 0.15s;
+      }
+      .icon-btn:hover {
+        background: rgba(59, 130, 246, 0.18);
+        transform: scale(1.05);
+      }
+
+      /* CONFIG */
+      #configScreen {
+        min-height: 100vh;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 40px 20px;
+        background: radial-gradient(ellipse at top, #091b40 0%, var(--bg) 70%);
+      }
+      #configScreen.active {
+        display: flex;
+      }
+      .config-logo {
+        text-align: center;
+        margin-bottom: 36px;
+      }
+      .config-logo h1 {
+        font-size: clamp(2rem, 6vw, 3.2rem);
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        background: linear-gradient(
+          135deg,
+          var(--bio) 0%,
+          var(--accent2) 50%,
+          var(--gold) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .config-logo p {
+        color: var(--gray);
+        font-size: 0.9rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-top: 6px;
+      }
+      .config-body {
+        width: 100%;
+        max-width: 820px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      @media (max-width: 700px) {
+        .config-body {
+          grid-template-columns: 1fr;
+        }
+      }
+      .config-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+      }
+      .config-card h3 {
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        margin-bottom: 18px;
+      }
+      .config-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .config-stepper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .stepper-btn {
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+      .stepper-btn:hover {
+        background: rgba(59, 130, 246, 0.2);
+      }
+      .stepper-val {
+        min-width: 42px;
+        text-align: center;
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .config-derived {
+        background: rgba(59, 130, 246, 0.06);
+        border: 1px solid rgba(59, 130, 246, 0.18);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.85rem;
+        color: var(--accent2);
+        margin-top: 4px;
+        line-height: 1.7;
+      }
+      .absent-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      .absent-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        background: var(--card);
+        border-radius: 8px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+      .absent-item:hover {
+        border-color: var(--border);
+      }
+      .absent-item.absent-checked {
+        border-color: rgba(239, 68, 68, 0.4);
+        background: rgba(239, 68, 68, 0.06);
+      }
+      .absent-item input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--danger);
+        cursor: pointer;
+      }
+      .config-footer {
+        width: 100%;
+        max-width: 820px;
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+      .config-error {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        border-radius: 10px;
+        padding: 12px 20px;
+        color: #fca5a5;
+        font-size: 0.88rem;
+        width: 100%;
+        max-width: 820px;
+        display: none;
+      }
+      .config-error.visible {
+        display: block;
+      }
+
+      /* WHEEL */
+      #wheelScreen {
+        min-height: 100vh;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 30px 20px;
+        background: radial-gradient(ellipse at top, #091b40 0%, var(--bg) 70%);
+      }
+      #wheelScreen.active {
+        display: flex;
+      }
+      .wheel-logo {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+      .wheel-logo h1 {
+        font-size: clamp(2rem, 6vw, 3.5rem);
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        background: linear-gradient(
+          135deg,
+          var(--bio) 0%,
+          var(--accent2) 50%,
+          var(--gold) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .wheel-logo p {
+        color: var(--gray);
+        font-size: 0.9rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-top: 6px;
+      }
+      .wheel-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 30px;
+        width: 100%;
+        max-width: 1000px;
+        align-items: start;
+      }
+      @media (max-width: 860px) {
+        .wheel-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .wheel-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      .wheel-reveal-counter {
+        font-size: 0.8rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        background: rgba(59, 130, 246, 0.08);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 6px 18px;
+      }
+      .wheel-container {
+        width: 300px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow:
+          0 0 40px rgba(59, 130, 246, 0.25),
+          0 0 0 2px rgba(59, 130, 246, 0.3);
+        background: var(--panel);
+      }
+      .wheel-window {
+        height: 400px;
+        overflow: hidden;
+        position: relative;
+      }
+      .wheel-strip {
+        width: 100%;
+        will-change: transform;
+      }
+      .wheel-item {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--text);
+        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+      }
+      .wheel-item.winner-item {
+        background: linear-gradient(
+          135deg,
+          rgba(59, 130, 246, 0.3),
+          rgba(139, 92, 246, 0.2)
+        );
+        color: var(--gold);
+        font-size: 1.55rem;
+        text-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+      }
+      .wheel-highlight-bar {
+        position: absolute;
+        top: 160px;
+        left: 0;
+        right: 0;
+        height: 80px;
+        pointer-events: none;
+        border-top: 2px solid rgba(245, 158, 11, 0.6);
+        border-bottom: 2px solid rgba(245, 158, 11, 0.6);
+        background: rgba(245, 158, 11, 0.04);
+        z-index: 2;
+      }
+      .wheel-fade-top {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        pointer-events: none;
+        background: linear-gradient(
+          to bottom,
+          var(--panel) 0%,
+          transparent 100%
+        );
+        z-index: 3;
+      }
+      .wheel-fade-bottom {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        pointer-events: none;
+        background: linear-gradient(to top, var(--panel) 0%, transparent 100%);
+        z-index: 3;
+      }
+      .winner-banner {
+        background: linear-gradient(
+          135deg,
+          rgba(245, 158, 11, 0.15),
+          rgba(59, 130, 246, 0.1)
+        );
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        border-radius: 12px;
+        padding: 16px 24px;
+        text-align: center;
+        min-height: 64px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 300px;
+      }
+      .winner-banner .w-revealed {
+        font-size: 1.55rem;
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .winner-banner .w-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gray);
+        margin-bottom: 4px;
+      }
+      .winner-banner .w-team {
+        font-size: 0.85rem;
+        color: var(--accent2);
+        margin-top: 4px;
+      }
+      .teams-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .teams-panel h3 {
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gray);
+        margin-bottom: 4px;
+      }
+      .team-reveal-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 18px;
+        transition:
+          border-color 0.4s,
+          box-shadow 0.4s;
+      }
+      .team-reveal-card.active-team {
+        border-color: var(--accent);
+        box-shadow: 0 0 16px rgba(59, 130, 246, 0.2);
+      }
+      .team-reveal-card.full-team {
+        border-color: var(--success);
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.15);
+      }
+      .team-reveal-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .team-color-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .team-reveal-header h4 {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--accent2);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .team-member-chips {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .member-chip {
+        background: rgba(59, 130, 246, 0.12);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.85rem;
+        color: var(--text);
+        animation: chipIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      }
+      @keyframes chipIn {
+        from {
+          transform: scale(0) translateY(8px);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .member-slot {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px dashed rgba(255, 255, 255, 0.12);
+        border-radius: 20px;
+        padding: 4px 18px;
+        font-size: 0.85rem;
+        color: var(--gray);
+      }
+      .teams-ready-banner {
+        text-align: center;
+        padding: 20px;
+        animation: readyBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes readyBounce {
+        from {
+          transform: scale(0.7);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .teams-ready-banner h2 {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--success);
+        margin-bottom: 8px;
+        text-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+      }
+
+      /* TURN OVERLAY */
+      #turnOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(7, 17, 32, 0.93);
+        z-index: 600;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(8px);
+      }
+      #turnOverlay.visible {
+        display: flex;
+      }
+      .turn-overlay-inner {
+        text-align: center;
+        animation: turnBounce 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+      }
+      @keyframes turnBounce {
+        from {
+          transform: scale(0.6) translateY(30px);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
+      }
+      .turn-overlay-sub {
+        font-size: 0.85rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        margin-bottom: 12px;
+      }
+      .turn-overlay-name {
+        font-size: clamp(3rem, 10vw, 5.5rem);
+        font-weight: 900;
+        color: var(--gold);
+        text-shadow: 0 0 40px rgba(245, 158, 11, 0.5);
+        margin-bottom: 10px;
+      }
+      .turn-overlay-msg {
+        font-size: 1.1rem;
+        color: var(--accent2);
+      }
+      .turn-overlay-bar {
+        margin-top: 24px;
+        width: 200px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .turn-overlay-progress {
+        height: 100%;
+        background: var(--gold);
+        border-radius: 2px;
+        animation: progressBar 1.5s linear forwards;
+      }
+      @keyframes progressBar {
+        from {
+          width: 0%;
+        }
+        to {
+          width: 100%;
+        }
+      }
+
+      /* GAME BOARD */
+      #gameScreen {
+        min-height: 100vh;
+        display: none;
+        flex-direction: column;
+        padding: 12px;
+      }
+      #gameScreen.active {
+        display: flex;
+      }
+      .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .top-bar-title {
+        font-size: clamp(1rem, 3vw, 1.4rem);
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        background: linear-gradient(135deg, var(--bio), var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .top-bar-controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .current-turn-bar {
+        background: linear-gradient(
+          90deg,
+          rgba(59, 130, 246, 0.12),
+          rgba(59, 130, 246, 0.04)
+        );
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        border-radius: 10px;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        transition: border-color 0.4s;
+      }
+      .current-turn-bar.active-flash {
+        border-color: var(--gold);
+      }
+      .current-turn-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--accent2);
+      }
+      .current-turn-name {
+        font-size: clamp(1rem, 3vw, 1.35rem);
+        font-weight: 800;
+        color: var(--gold);
+      }
+      .questions-remaining {
+        font-size: 0.85rem;
+        color: var(--gray);
+      }
+      .scoreboard {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        margin-bottom: 12px;
+        padding-bottom: 4px;
+      }
+      .score-card {
+        flex: 0 0 auto;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 16px;
+        text-align: center;
+        min-width: 110px;
+        transition:
+          border-color 0.4s,
+          box-shadow 0.4s,
+          transform 0.2s;
+        position: relative;
+      }
+      .score-card.leading {
+        border-color: var(--gold);
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+        transform: translateY(-2px);
+      }
+      .score-card.active-turn {
+        border-color: var(--accent);
+        box-shadow: 0 0 16px rgba(59, 130, 246, 0.3);
+      }
+      .rank-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: var(--gold);
+        color: #000;
+        font-size: 0.65rem;
+        font-weight: 800;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .team-name-display {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--accent2);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 4px;
+      }
+      .team-score {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--text);
+      }
+      .board-container {
+        flex: 1;
+        overflow-y: auto;
+      }
+      .category-picker {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto;
+      }
+      .cat-pick-btn {
+        background: linear-gradient(
+          135deg,
+          rgba(59, 130, 246, 0.12),
+          rgba(59, 130, 246, 0.04)
+        );
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 14px;
+        padding: 16px 22px;
+        cursor: pointer;
+        text-align: left;
+        transition:
+          transform 0.12s,
+          box-shadow 0.12s,
+          background 0.15s;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .cat-pick-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 24px rgba(59, 130, 246, 0.3);
+        background: rgba(59, 130, 246, 0.18);
+        border-color: rgba(59, 130, 246, 0.5);
+      }
+      .cat-pick-btn.challenge-pick {
+        background: rgba(139, 92, 246, 0.08);
+        border-color: rgba(139, 92, 246, 0.3);
+      }
+      .cat-pick-btn.challenge-pick:hover {
+        background: rgba(139, 92, 246, 0.18);
+        box-shadow: 0 6px 24px rgba(139, 92, 246, 0.3);
+        border-color: rgba(139, 92, 246, 0.5);
+      }
+      .cat-pick-label {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--accent2);
+      }
+      .cat-pick-btn.challenge-pick .cat-pick-label {
+        color: var(--purple);
+      }
+      .cat-pick-progress {
+        font-size: 0.7rem;
+        color: var(--gray);
+        white-space: nowrap;
+      }
+      .category-view {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        width: 100%;
+        max-width: 560px;
+        margin: 0 auto;
+      }
+      .cat-view-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .cat-back-btn {
+        padding: 7px 14px !important;
+        font-size: 0.78rem !important;
+        flex-shrink: 0;
+      }
+      .cat-view-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--accent2);
+      }
+      .cat-view-title.challenge-title {
+        color: var(--purple);
+      }
+      .cat-view-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+      }
+      .q-cell {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 8px;
+        text-align: center;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s,
+          background 0.2s;
+        min-height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .q-cell:hover:not(.used) {
+        transform: scale(1.05);
+        box-shadow: 0 6px 24px rgba(59, 130, 246, 0.3);
+        background: rgba(59, 130, 246, 0.12);
+      }
+      .q-cell.used {
+        opacity: 0.2;
+        cursor: default;
+        pointer-events: none;
+      }
+      .q-cell.challenge-cell {
+        background: rgba(139, 92, 246, 0.08);
+        border-color: rgba(139, 92, 246, 0.3);
+      }
+      .q-cell.challenge-cell:hover:not(.used) {
+        background: rgba(139, 92, 246, 0.18);
+        box-shadow: 0 6px 24px rgba(139, 92, 246, 0.3);
+      }
+      .q-pts {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--gold);
+      }
+
+      /* MODALS */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(7, 17, 32, 0.85);
+        z-index: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        backdrop-filter: blur(6px);
+      }
+      .modal-overlay.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 28px;
+        max-width: 560px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        animation: modalIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+      }
+      @keyframes modalIn {
+        from {
+          transform: scale(0.88) translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
+      }
+      .modal-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        border-radius: 8px;
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+      .modal-close:hover {
+        background: rgba(239, 68, 68, 0.2);
+      }
+      .modal-cat {
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--bio2);
+        margin-bottom: 8px;
+      }
+      .modal-pts {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--gold);
+        margin-bottom: 18px;
+      }
+      .modal-pts.double-active {
+        color: var(--purple);
+      }
+      .modal-question {
+        font-size: 1.1rem;
+        font-weight: 600;
+        line-height: 1.6;
+        margin-bottom: 18px;
+        display: none;
+      }
+      .modal-question.visible {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+      .modal-answer {
+        background: rgba(16, 185, 129, 0.08);
+        border: 1px solid rgba(16, 185, 129, 0.22);
+        border-radius: 10px;
+        padding: 14px 18px;
+        color: var(--bio2);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 18px;
+        display: none;
+      }
+      .modal-answer.visible {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .double-it-section {
+        background: rgba(139, 92, 246, 0.06);
+        border: 1px solid rgba(139, 92, 246, 0.25);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 18px;
+        text-align: center;
+      }
+      .double-it-section h3 {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-bottom: 14px;
+        letter-spacing: 0.1em;
+      }
+      .double-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--purple), #4c1d95);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-left: 10px;
+        animation: glow 1.5s ease-in-out infinite;
+      }
+      @keyframes glow {
+        0%,
+        100% {
+          box-shadow: 0 0 6px rgba(139, 92, 246, 0.5);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(139, 92, 246, 0.9);
+        }
+      }
+      .challenge-section h3 {
+        font-size: 0.9rem;
+        color: var(--purple);
+        margin-bottom: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .team-select-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 8px;
+      }
+      .team-select-btn {
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 12px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        text-align: center;
+      }
+      .team-select-btn:hover {
+        border-color: var(--purple);
+        background: rgba(139, 92, 246, 0.1);
+      }
+      .team-select-btn.selected {
+        border-color: var(--purple);
+        background: rgba(139, 92, 246, 0.18);
+        color: #d8b4fe;
+      }
+      .bid-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .bid-row label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        min-width: 140px;
+      }
+      .bid-row input {
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 1rem;
+        width: 100px;
+        outline: none;
+      }
+      .info-banner {
+        background: rgba(59, 130, 246, 0.08);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        font-size: 0.88rem;
+        line-height: 1.7;
+        color: var(--accent2);
+      }
+      .challenge-result {
+        background: rgba(59, 130, 246, 0.05);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 18px;
+        display: none;
+      }
+      .challenge-result.visible {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+      .challenge-result.correct-result {
+        background: rgba(34, 197, 94, 0.07);
+        border-color: rgba(34, 197, 94, 0.25);
+      }
+      .challenge-result.incorrect-result {
+        background: rgba(239, 68, 68, 0.07);
+        border-color: rgba(239, 68, 68, 0.25);
+      }
+      .breakdown-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin-bottom: 14px;
+      }
+      .breakdown-grid {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 6px 16px;
+        font-size: 0.88rem;
+      }
+      .bd-label {
+        color: var(--gray);
+      }
+      .bd-val {
+        font-weight: 700;
+        text-align: right;
+      }
+      .bd-val.pos {
+        color: var(--success);
+      }
+      .bd-val.neg {
+        color: var(--danger);
+      }
+
+      /* MUTATION MARKET */
+      #mutationMarketScreen {
+        min-height: 100vh;
+        display: none;
+        flex-direction: column;
+        padding: 20px;
+      }
+      #mutationMarketScreen.active {
+        display: flex;
+      }
+      .market-layout {
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 20px;
+        flex: 1;
+      }
+      @media (max-width: 800px) {
+        .market-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .power-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .power-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .power-card:hover {
+        border-color: rgba(16, 185, 129, 0.4);
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+      }
+      .power-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .power-icon {
+        font-size: 1.8rem;
+      }
+      .power-cost {
+        background: linear-gradient(135deg, var(--gold), #d97706);
+        color: #000;
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+      .power-name {
+        font-size: 1rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .power-desc {
+        font-size: 0.82rem;
+        color: var(--gray);
+        line-height: 1.5;
+        margin-bottom: 12px;
+      }
+      .market-team-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        margin-bottom: 10px;
+      }
+      .market-team-card.active-buyer {
+        border-color: var(--gold);
+        box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
+      }
+      .market-team-card h4 {
+        font-size: 0.85rem;
+        color: var(--accent2);
+        margin-bottom: 4px;
+      }
+      .market-score {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--gold);
+      }
+      .purchased-powers-list {
+        margin-top: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .power-tag {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.25);
+        border-radius: 12px;
+        padding: 2px 8px;
+        color: var(--bio2);
+        font-size: 0.72rem;
+      }
+
+      /* POWER ROUND */
+      #powerRoundScreen {
+        min-height: 100vh;
+        display: none;
+        flex-direction: column;
+        padding: 20px;
+        align-items: center;
+      }
+      #powerRoundScreen.active {
+        display: flex;
+      }
+      .power-round-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .power-round-header h2 {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-weight: 900;
+        color: var(--bio);
+      }
+      .power-round-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 24px;
+        width: 100%;
+        max-width: 1100px;
+      }
+      @media (max-width: 800px) {
+        .power-round-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .power-round-q-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+      }
+      .pr-q-num {
+        font-size: 0.8rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--bio2);
+        margin-bottom: 8px;
+      }
+      .pr-q-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+        line-height: 1.6;
+        margin-bottom: 18px;
+      }
+      .pr-answer-box {
+        background: rgba(16, 185, 129, 0.08);
+        border: 1px solid rgba(16, 185, 129, 0.22);
+        border-radius: 10px;
+        padding: 14px 18px;
+        color: var(--bio2);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 18px;
+        display: none;
+      }
+      .pr-answer-box.visible {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+      .active-powers-panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+      }
+      .active-powers-panel h3 {
+        font-size: 0.8rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        margin-bottom: 14px;
+      }
+      .team-power-block {
+        margin-bottom: 18px;
+      }
+      .team-power-block h4 {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--gold);
+        margin-bottom: 8px;
+      }
+      .power-activate-btn {
+        width: 100%;
+        margin-bottom: 6px;
+        padding: 8px 14px !important;
+        font-size: 0.8rem !important;
+        text-align: left !important;
+        justify-content: space-between !important;
+      }
+      .power-active-banner {
+        background: linear-gradient(
+          135deg,
+          rgba(16, 185, 129, 0.15),
+          rgba(16, 185, 129, 0.05)
+        );
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 14px;
+        display: none;
+      }
+      .power-active-banner.visible {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+      .pr-scoreboard {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      /* ALLIANCE SETUP */
+      #allianceSetupScreen {
+        min-height: 100vh;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        background: radial-gradient(
+          ellipse at center,
+          #0d2040 0%,
+          var(--bg) 70%
+        );
+      }
+      #allianceSetupScreen.active {
+        display: flex;
+      }
+      .alliance-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .alliance-header h2 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 900;
+        color: var(--gold);
+        text-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+      }
+      .alliance-header p {
+        color: var(--gray);
+        margin-top: 8px;
+      }
+      .alliances-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        width: 100%;
+        max-width: 900px;
+      }
+      @media (max-width: 700px) {
+        .alliances-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .alliance-card {
+        background: var(--panel);
+        border: 2px solid var(--border);
+        border-radius: 20px;
+        padding: 28px;
+        text-align: center;
+        transition: border-color 0.3s;
+      }
+      .alliance-card.alliance-a {
+        border-color: rgba(59, 130, 246, 0.4);
+      }
+      .alliance-card.alliance-b {
+        border-color: rgba(139, 92, 246, 0.4);
+      }
+      .alliance-name {
+        font-size: 1.4rem;
+        font-weight: 900;
+        margin-bottom: 8px;
+      }
+      .alliance-teams {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-bottom: 16px;
+      }
+      .alliance-score-display {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--gold);
+        margin-bottom: 20px;
+      }
+      .side-choice {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .side-btn {
+        padding: 12px 24px !important;
+        font-size: 0.9rem !important;
+        min-width: 130px;
+        border: 2px solid transparent !important;
+      }
+      .mitosis-btn {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+        color: #fff !important;
+      }
+      .meiosis-btn {
+        background: linear-gradient(135deg, #8b5cf6, #5b21b6) !important;
+        color: #fff !important;
+      }
+      .side-btn.selected-side {
+        transform: scale(1.08) !important;
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.5) !important;
+        border-color: var(--gold) !important;
+      }
+
+      /* SUPERHUMAN BUILDER */
+      #superhumanBuilderScreen {
+        min-height: 100vh;
+        display: none;
+        flex-direction: column;
+        padding: 24px;
+        align-items: center;
+      }
+      #superhumanBuilderScreen.active {
+        display: flex;
+      }
+      .builder-header {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+      .builder-header h2 {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-weight: 900;
+        color: var(--gold);
+      }
+      .builder-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+        width: 100%;
+        max-width: 1100px;
+      }
+      @media (max-width: 800px) {
+        .builder-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .super-power-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .super-power-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .super-power-card:hover {
+        border-color: rgba(245, 158, 11, 0.4);
+      }
+      .spcard-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .sp-cost {
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: var(--gold);
+        border-radius: 20px;
+        padding: 2px 10px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      .builder-stats-panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+      }
+      .stat-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .stat-bar-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--accent2);
+        min-width: 64px;
+      }
+      .stat-bar-track {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .stat-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.4s;
+      }
+      .stat-bar-val {
+        font-size: 0.85rem;
+        font-weight: 700;
+        min-width: 28px;
+        text-align: right;
+      }
+      .mp-counter {
+        text-align: center;
+        background: rgba(245, 158, 11, 0.08);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 18px;
+      }
+      .mp-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gray);
+      }
+      .mp-val {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--gold);
+      }
+
+      /* BATTLE */
+      #battleScreen {
+        min-height: 100vh;
+        display: none;
+        flex-direction: column;
+        padding: 20px;
+        align-items: center;
+        background: radial-gradient(ellipse at top, #0a1a30 0%, var(--bg) 70%);
+      }
+      #battleScreen.active {
+        display: flex;
+      }
+      .battle-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .battle-header h2 {
+        font-size: clamp(1.8rem, 5vw, 3rem);
+        font-weight: 900;
+        background: linear-gradient(
+          135deg,
+          var(--bio),
+          var(--accent2),
+          var(--gold)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .battle-arena {
+        display: grid;
+        grid-template-columns: 1fr 60px 1fr;
+        gap: 0;
+        width: 100%;
+        max-width: 950px;
+        align-items: start;
+      }
+      @media (max-width: 650px) {
+        .battle-arena {
+          grid-template-columns: 1fr;
+        }
+      }
+      .battle-side {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 22px;
+        text-align: center;
+      }
+      .battle-side.active-fighter {
+        border-color: var(--gold);
+        box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+        animation: activePulse 2s ease-in-out infinite;
+      }
+      @keyframes activePulse {
+        0%,
+        100% {
+          box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+        }
+        50% {
+          box-shadow: 0 0 50px rgba(245, 158, 11, 0.4);
+        }
+      }
+      .battle-vs {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--danger);
+        text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+      }
+      .fighter-name {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--gold);
+        margin-bottom: 4px;
+      }
+      .fighter-side-badge {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+      .mitosis-badge {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.4);
+        color: var(--accent2);
+      }
+      .meiosis-badge {
+        background: rgba(139, 92, 246, 0.2);
+        border: 1px solid rgba(139, 92, 246, 0.4);
+        color: #d8b4fe;
+      }
+      .hp-bar-container {
+        margin-bottom: 14px;
+      }
+      .hp-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.78rem;
+        color: var(--gray);
+        margin-bottom: 4px;
+      }
+      .hp-bar-track {
+        height: 16px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .hp-bar-fill {
+        height: 100%;
+        border-radius: 8px;
+        transition: width 0.6s ease;
+        background: linear-gradient(90deg, #22c55e, #16a34a);
+      }
+      .hp-bar-fill.hp-warning {
+        background: linear-gradient(90deg, #f59e0b, #d97706);
+      }
+      .hp-bar-fill.hp-danger {
+        background: linear-gradient(90deg, #ef4444, #991b1b);
+      }
+      .fighter-stats-mini {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-size: 0.8rem;
+      }
+      .fstat {
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 8px;
+        padding: 8px;
+      }
+      .fstat-label {
+        color: var(--gray);
+        margin-bottom: 2px;
+      }
+      .fstat-val {
+        font-weight: 800;
+      }
+      .battle-actions {
+        width: 100%;
+        max-width: 950px;
+        margin-top: 16px;
+      }
+      .action-btns {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 12px;
+      }
+      .battle-log {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        max-height: 170px;
+        overflow-y: auto;
+        width: 100%;
+        max-width: 950px;
+        margin-top: 10px;
+      }
+      .log-entry {
+        font-size: 0.85rem;
+        line-height: 1.8;
+        color: var(--gray);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        padding: 3px 0;
+      }
+      .log-entry.good {
+        color: var(--success);
+      }
+      .log-entry.bad {
+        color: var(--danger);
+      }
+      .log-entry.info {
+        color: var(--accent2);
+      }
+      .log-entry.critical {
+        color: var(--gold);
+        font-weight: 700;
+      }
+
+      /* BATTLE WINNER */
+      #battleWinnerScreen {
+        min-height: 100vh;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 30px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      #battleWinnerScreen.active {
+        display: flex;
+      }
+      .trophy-display {
+        font-size: clamp(4rem, 12vw, 8rem);
+        animation: trophyBounce 1s ease infinite;
+        margin-bottom: 16px;
+      }
+      @keyframes trophyBounce {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-2deg);
+        }
+        50% {
+          transform: translateY(-15px) rotate(2deg);
+        }
+      }
+      .winner-title {
+        font-size: clamp(1rem, 2.5vw, 1.6rem);
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        margin-bottom: 10px;
+      }
+      .winner-name {
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--gold), #f97316, var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 28px;
+        animation: shimmer 2s infinite;
+      }
+      @keyframes shimmer {
+        0%,
+        100% {
+          filter: brightness(1);
+        }
+        50% {
+          filter: brightness(1.3);
+        }
+      }
+      .final-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        max-width: 500px;
+        width: 100%;
+        margin-bottom: 28px;
+      }
+      .final-stat-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .final-stat-card h4 {
+        font-size: 0.75rem;
+        color: var(--gray);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+      }
+      .final-stat-card .stat-val {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--gold);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .score-pop {
+        position: fixed;
+        font-size: 1.6rem;
+        font-weight: 900;
+        pointer-events: none;
+        animation: scorePop 1.2s ease-out forwards;
+        z-index: 300;
+      }
+      @keyframes scorePop {
+        0% {
+          transform: translateY(0) scale(0.7);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-90px) scale(1.2);
+          opacity: 0;
+        }
+      }
+      .score-pop.positive {
+        color: var(--success);
+        text-shadow: 0 0 14px rgba(34, 197, 94, 0.6);
+      }
+      .score-pop.negative {
+        color: var(--danger);
+        text-shadow: 0 0 14px rgba(239, 68, 68, 0.6);
+      }
+      .double-flash {
+        position: fixed;
+        inset: 0;
+        background: rgba(139, 92, 246, 0.12);
+        pointer-events: none;
+        z-index: 50;
+        animation: doubleFlash 0.6s ease forwards;
+      }
+      @keyframes doubleFlash {
+        0%,
+        100% {
+          opacity: 0;
+        }
+        30%,
+        70% {
+          opacity: 1;
+        }
+      }
+      .damage-pop {
+        position: fixed;
+        font-size: 2rem;
+        font-weight: 900;
+        pointer-events: none;
+        animation: damagePop 1.5s ease-out forwards;
+        z-index: 300;
+        color: var(--danger);
+        text-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+      }
+      .heal-pop {
+        position: fixed;
+        font-size: 2rem;
+        font-weight: 900;
+        pointer-events: none;
+        animation: damagePop 1.5s ease-out forwards;
+        z-index: 300;
+        color: var(--success);
+        text-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+      }
+      @keyframes damagePop {
+        0% {
+          transform: translateY(0) scale(0.8);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-80px) scale(1.3);
+          opacity: 0;
+        }
+      }
+      .confetti-piece {
+        position: fixed;
+        top: -20px;
+        animation: confettiFall linear forwards;
+        z-index: 200;
+        border-radius: 2px;
+      }
+      @keyframes confettiFall {
+        to {
+          transform: translateY(110vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--panel);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(59, 130, 246, 0.4);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- CONFIG SCREEN -->
+    <div id="configScreen" class="screen">
+      <div class="config-logo">
+        <h1>🧬 BIOLOGY SHOWDOWN</h1>
+        <p>Classroom Competition Game</p>
+      </div>
+      <div class="config-body">
+        <div class="config-card">
+          <h3>⚙️ Game Settings</h3>
+          <div class="config-row">
+            <div>
+              <label style="font-size: 0.95rem; font-weight: 600"
+                >Number of Teams</label
+              >
+              <div
+                style="font-size: 0.78rem; color: var(--gray); margin-top: 2px"
+              >
+                2–8 teams
+              </div>
+            </div>
+            <div class="config-stepper">
+              <button class="stepper-btn" onclick="adjustConfig('numTeams',-1)">
+                −
+              </button>
+              <div class="stepper-val" id="cfgNumTeams">5</div>
+              <button class="stepper-btn" onclick="adjustConfig('numTeams',1)">
+                +
+              </button>
+            </div>
+          </div>
+          <div class="config-row">
+            <div>
+              <label style="font-size: 0.95rem; font-weight: 600"
+                >Students Per Team</label
+              >
+              <div
+                style="font-size: 0.78rem; color: var(--gray); margin-top: 2px"
+              >
+                1–8 per team
+              </div>
+            </div>
+            <div class="config-stepper">
+              <button
+                class="stepper-btn"
+                onclick="adjustConfig('studentsPerTeam',-1)"
+              >
+                −
+              </button>
+              <div class="stepper-val" id="cfgStudentsPerTeam">3</div>
+              <button
+                class="stepper-btn"
+                onclick="adjustConfig('studentsPerTeam',1)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <div class="config-derived" id="cfgDerived"></div>
+        </div>
+        <div class="config-card">
+          <h3>🚫 Mark Absent Students</h3>
+          <div class="absent-list" id="absentList"></div>
+        </div>
+      </div>
+      <div class="config-footer">
+        <div class="config-error" id="configError"></div>
+        <button
+          class="btn btn-gold"
+          onclick="proceedToWheel()"
+          style="font-size: 1.1rem; padding: 18px 48px"
+        >
+          🎰 ASSIGN TEAMS
+        </button>
+      </div>
+    </div>
+
+    <!-- WHEEL SCREEN -->
+    <div id="wheelScreen" class="screen">
+      <div class="wheel-logo">
+        <h1>🧬 BIOLOGY SHOWDOWN</h1>
+        <p>Team Assignment Wheel</p>
+      </div>
+      <div class="wheel-layout">
+        <div class="wheel-section">
+          <div class="wheel-reveal-counter" id="wheelRevealCounter">
+            SPIN TO REVEAL · 0 / 0
+          </div>
+          <div class="wheel-container">
+            <div class="wheel-window">
+              <div class="wheel-strip" id="wheelStrip"></div>
+              <div class="wheel-highlight-bar"></div>
+              <div class="wheel-fade-top"></div>
+              <div class="wheel-fade-bottom"></div>
+            </div>
+          </div>
+          <div class="winner-banner" id="winnerBanner">
+            <div class="w-label">Next spin reveals</div>
+            <div class="w-revealed">?</div>
+          </div>
+          <div id="spinBtnArea">
+            <button
+              class="btn btn-gold"
+              id="spinBtn"
+              onclick="spinWheel()"
+              style="font-size: 1.05rem; padding: 16px 40px"
+            >
+              🎰 SPIN!
+            </button>
+          </div>
+        </div>
+        <div class="teams-panel">
+          <h3>📋 Team Assignments</h3>
+          <div id="teamsRevealGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TURN OVERLAY -->
+    <div id="turnOverlay">
+      <div class="turn-overlay-inner">
+        <div class="turn-overlay-sub">⚡ It's Time To Play</div>
+        <div class="turn-overlay-name" id="turnOverlayName"></div>
+        <div class="turn-overlay-msg">Get Ready!</div>
+        <div class="turn-overlay-bar">
+          <div class="turn-overlay-progress" id="turnOverlayProgress"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME BOARD -->
+    <div id="gameScreen" class="screen">
+      <div class="top-bar">
+        <div class="top-bar-title">🧬 BIOLOGY SHOWDOWN</div>
+        <div class="top-bar-controls">
+          <button class="icon-btn" onclick="showRules()">❓ Help</button>
+          <button class="icon-btn" onclick="toggleMute()" id="muteBtn">
+            🔊
+          </button>
+          <button class="icon-btn" onclick="toggleFullscreen()">⛶</button>
+          <button
+            class="icon-btn"
+            onclick="confirmReset()"
+            style="color: var(--danger)"
+          >
+            ↺ Reset
+          </button>
+        </div>
+      </div>
+      <div class="current-turn-bar" id="currentTurnBar">
+        <div>
+          <div class="current-turn-label">Current Turn</div>
+          <div class="current-turn-name" id="currentTurnName">—</div>
+        </div>
+        <div
+          style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap"
+        >
+          <div class="questions-remaining" id="questionsRemainingDisplay">
+            40 questions remaining
+          </div>
+          <button
+            class="btn btn-primary"
+            onclick="manualNextTeam()"
+            style="padding: 8px 20px; font-size: 0.85rem"
+          >
+            NEXT TEAM ▶
+          </button>
+          <button
+            class="btn btn-bio"
+            onclick="goToMutationMarket()"
+            style="padding: 8px 20px; font-size: 0.85rem"
+          >
+            ⚗️ MUTATION MARKET
+          </button>
+        </div>
+      </div>
+      <div class="scoreboard" id="scoreboard"></div>
+      <div class="board-container">
+        <div id="categoryBoard"></div>
+      </div>
+    </div>
+
+    <!-- QUESTION MODAL -->
+    <div class="modal-overlay" id="questionModal">
+      <div class="modal">
+        <button class="modal-close" onclick="closeQuestionModal()">✕</button>
+        <div class="modal-cat" id="qModalCat"></div>
+        <div class="modal-pts" id="qModalPts"></div>
+        <div class="double-it-section" id="doubleItSection">
+          <h3>Before seeing the question — choose your wager:</h3>
+          <div
+            style="
+              display: flex;
+              gap: 12px;
+              justify-content: center;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="btn btn-gray" onclick="setDouble(false)">
+              📋 NORMAL
+            </button>
+            <button class="btn btn-purple" onclick="setDouble(true)">
+              ⚡ DOUBLE IT
+            </button>
+          </div>
+        </div>
+        <div
+          id="doubleActiveBadge"
+          style="display: none; text-align: center; margin-bottom: 14px"
+        >
+          <span
+            style="
+              color: var(--purple);
+              font-size: 0.85rem;
+              letter-spacing: 0.1em;
+              text-transform: uppercase;
+            "
+            >Double It Active</span
+          >
+          <span class="double-badge">×2</span>
+        </div>
+        <div class="modal-question" id="qModalQuestion"></div>
+        <div class="modal-answer" id="qModalAnswer"></div>
+        <div class="modal-actions" id="qModalActions">
+          <button class="btn btn-gray" onclick="revealAnswer()">
+            👁 REVEAL ANSWER
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHALLENGE MODAL -->
+    <div class="modal-overlay" id="challengeModal">
+      <div class="modal">
+        <button class="modal-close" onclick="closeChallengeModal()">✕</button>
+        <div class="modal-cat">🎯 CHALLENGE ZONE</div>
+        <div class="modal-pts" id="cModalPts"></div>
+        <div id="challengeStep1" class="challenge-section">
+          <h3>🎯 Step 1 — Pick an opponent</h3>
+          <div class="team-select-grid" id="challengeOpponentGrid"></div>
+        </div>
+        <div id="challengeStep2" style="display: none">
+          <h3
+            style="
+              font-size: 0.9rem;
+              color: var(--purple);
+              margin-bottom: 16px;
+              letter-spacing: 0.1em;
+              text-transform: uppercase;
+            "
+          >
+            💰 Step 2 — Place Bids
+          </h3>
+          <div class="bid-row">
+            <label id="challengerBidLabel">Your bid:</label
+            ><input
+              type="number"
+              id="challengerBidInput"
+              min="0"
+              placeholder="0"
+            />
+          </div>
+          <div class="bid-row">
+            <label id="opponentBidLabel">Opponent bid:</label
+            ><input
+              type="number"
+              id="opponentBidInput"
+              min="0"
+              placeholder="0"
+            />
+          </div>
+          <p
+            style="
+              color: var(--gray);
+              font-size: 0.82rem;
+              margin-bottom: 16px;
+              line-height: 1.6;
+            "
+          >
+            Lower bid must answer. Correct → wins Q.Value + Opponent Bid. Wrong
+            → loses own bid only.
+          </p>
+          <button class="btn btn-purple" onclick="lockBids()">
+            🔒 LOCK BIDS &amp; REVEAL QUESTION
+          </button>
+        </div>
+        <div id="challengeStep3" style="display: none">
+          <div class="info-banner" id="answeringTeamBanner"></div>
+          <div
+            style="
+              font-size: 1.1rem;
+              font-weight: 600;
+              line-height: 1.6;
+              margin-bottom: 16px;
+            "
+            id="cModalQuestion"
+          ></div>
+          <div class="modal-answer" id="cModalAnswer"></div>
+          <div class="challenge-result" id="challengeResultDisplay"></div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap">
+            <button
+              class="btn btn-gray"
+              id="cRevealBtn"
+              onclick="revealChallengeAnswer()"
+            >
+              👁 REVEAL ANSWER
+            </button>
+            <button
+              class="btn btn-success"
+              id="cCorrectBtn"
+              onclick="challengeOutcome(true)"
+              style="display: none"
+            >
+              ✔ CORRECT
+            </button>
+            <button
+              class="btn btn-danger"
+              id="cIncorrectBtn"
+              onclick="challengeOutcome(false)"
+              style="display: none"
+            >
+              ✖ INCORRECT
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RULES MODAL -->
+    <div class="modal-overlay" id="rulesModal">
+      <div class="modal" style="max-width: 500px">
+        <button
+          class="modal-close"
+          onclick="document.getElementById('rulesModal').classList.remove('open')"
+        >
+          ✕
+        </button>
+        <div
+          style="
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 18px;
+          "
+        >
+          ❓ HOW TO PLAY
+        </div>
+        <ul
+          style="
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+          "
+        >
+          <li>
+            1️⃣ Teams take turns selecting questions from Q1–40 on the board.
+          </li>
+          <li>
+            2️⃣ Choose <b style="color: var(--purple)">Normal</b> or
+            <b style="color: var(--purple)">Double It</b> before each question.
+          </li>
+          <li>3️⃣ Correct = +points · Incorrect = −points.</li>
+          <li>
+            4️⃣ Purple <b style="color: var(--purple)">Challenge</b> squares let
+            teams wager against each other.
+          </li>
+          <li>
+            5️⃣ After Q40, visit the 🧬 <b>Mutation Market</b> to buy powers with
+            points.
+          </li>
+          <li>6️⃣ Activate powers during the Power Round (Q41–50)!</li>
+          <li>
+            7️⃣ After Q50, teams merge into alliances for the ⚔️ Superhuman
+            Battle Arena!
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- MUTATION MARKET -->
+    <div id="mutationMarketScreen" class="screen">
+      <div class="top-bar">
+        <div class="top-bar-title">🧬 MUTATION MARKET</div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button
+            class="btn btn-gray"
+            onclick="returnToGame()"
+            style="padding: 10px 20px; font-size: 0.85rem"
+          >
+            ← Back to Board
+          </button>
+          <button
+            class="btn btn-gold"
+            onclick="startPowerRound()"
+            style="padding: 10px 24px; font-size: 0.9rem"
+          >
+            ▶ START POWER ROUND
+          </button>
+        </div>
+      </div>
+      <div
+        style="
+          background: rgba(16, 185, 129, 0.08);
+          border: 1px solid rgba(16, 185, 129, 0.25);
+          border-radius: 12px;
+          padding: 14px 20px;
+          margin-bottom: 20px;
+          font-size: 0.9rem;
+          color: var(--bio2);
+          line-height: 1.6;
+        "
+      >
+        🧬 Spend points to buy mutation powers. Click a team card to select
+        who's buying.
+      </div>
+      <div class="market-layout">
+        <div>
+          <h2
+            style="
+              font-size: 1.3rem;
+              font-weight: 900;
+              color: var(--gold);
+              margin-bottom: 4px;
+            "
+          >
+            Power Shop
+          </h2>
+          <div class="power-grid" id="powerShopGrid"></div>
+        </div>
+        <div id="mutationMarketSidebar">
+          <h3
+            style="
+              font-size: 0.75rem;
+              letter-spacing: 0.2em;
+              text-transform: uppercase;
+              color: var(--gray);
+              margin-bottom: 12px;
+            "
+          >
+            Teams
+          </h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- POWER ROUND -->
+    <div id="powerRoundScreen" class="screen">
+      <div class="power-round-header">
+        <h2>⚡ POWER ROUND</h2>
+        <p style="color: var(--gray); font-size: 0.9rem">
+          Questions 41–50 · Use your mutation powers!
+        </p>
+      </div>
+      <div class="pr-scoreboard" id="prScoreboard"></div>
+      <div class="power-round-layout">
+        <div class="power-round-q-card" id="prQuestionCard">
+          <div style="text-align: center; color: var(--gray); padding: 40px">
+            Select a question below to begin
+          </div>
+        </div>
+        <div class="active-powers-panel">
+          <h3>🔋 Team Powers</h3>
+          <div class="power-active-banner" id="powerActiveBanner"></div>
+          <div id="teamPowersList"></div>
+        </div>
+      </div>
+      <div style="width: 100%; max-width: 1100px; margin-top: 16px">
+        <div
+          style="
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 10px;
+          "
+        >
+          Select Question (41–50)
+        </div>
+        <div
+          style="display: flex; gap: 8px; flex-wrap: wrap"
+          id="prQuestionSelector"
+        ></div>
+      </div>
+    </div>
+
+    <!-- ALLIANCE SETUP -->
+    <div id="allianceSetupScreen" class="screen">
+      <div class="alliance-header">
+        <h2>🧬 SUPERHUMAN BATTLE ARENA</h2>
+        <p>Teams merge into alliances. Choose your biological side!</p>
+      </div>
+      <div class="alliances-grid" id="alliancesGrid"></div>
+      <div style="margin-top: 32px">
+        <button
+          class="btn btn-gold"
+          onclick="proceedToBuild()"
+          style="font-size: 1.1rem; padding: 18px 44px"
+        >
+          🔬 BUILD YOUR SUPERHUMANS ▶
+        </button>
+      </div>
+    </div>
+
+    <!-- SUPERHUMAN BUILDER -->
+    <div id="superhumanBuilderScreen" class="screen">
+      <div class="builder-header">
+        <h2 id="builderTitle">🔬 Build Your Superhuman</h2>
+        <p id="builderSubtitle" style="color: var(--gray); margin-top: 6px"></p>
+      </div>
+      <div class="builder-layout">
+        <div>
+          <h3
+            id="builderShopTitle"
+            style="font-size: 1rem; font-weight: 800; color: var(--bio2)"
+          >
+            Choose Powers
+          </h3>
+          <div class="super-power-grid" id="superPowerGrid"></div>
+        </div>
+        <div class="builder-stats-panel">
+          <div class="mp-counter">
+            <div class="mp-label">Mutation Points Remaining</div>
+            <div class="mp-val" id="mpRemaining">0</div>
+          </div>
+          <div
+            style="
+              font-size: 0.8rem;
+              color: var(--gray);
+              text-transform: uppercase;
+              letter-spacing: 0.15em;
+              margin-bottom: 12px;
+            "
+          >
+            Superhuman Stats
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-bar-label">❤️ HP</div>
+            <div class="stat-bar-track">
+              <div
+                class="stat-bar-fill"
+                id="statHpBar"
+                style="width: 50%; background: #22c55e"
+              ></div>
+            </div>
+            <div class="stat-bar-val" id="statHpVal">100</div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-bar-label">⚔️ Atk</div>
+            <div class="stat-bar-track">
+              <div
+                class="stat-bar-fill"
+                id="statAtkBar"
+                style="width: 30%; background: #ef4444"
+              ></div>
+            </div>
+            <div class="stat-bar-val" id="statAtkVal">15</div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-bar-label">🛡 Def</div>
+            <div class="stat-bar-track">
+              <div
+                class="stat-bar-fill"
+                id="statDefBar"
+                style="width: 30%; background: #3b82f6"
+              ></div>
+            </div>
+            <div class="stat-bar-val" id="statDefVal">10</div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-bar-label">💨 Spd</div>
+            <div class="stat-bar-track">
+              <div
+                class="stat-bar-fill"
+                id="statSpdBar"
+                style="width: 30%; background: #f59e0b"
+              ></div>
+            </div>
+            <div class="stat-bar-val" id="statSpdVal">10</div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-bar-label">🔄 Regen</div>
+            <div class="stat-bar-track">
+              <div
+                class="stat-bar-fill"
+                id="statRegenBar"
+                style="width: 0%; background: #10b981"
+              ></div>
+            </div>
+            <div class="stat-bar-val" id="statRegenVal">0</div>
+          </div>
+          <div style="margin-top: 16px">
+            <div
+              style="
+                font-size: 0.75rem;
+                color: var(--gray);
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                margin-bottom: 8px;
+              "
+            >
+              Powers Purchased
+            </div>
+            <div
+              id="builderPurchasedList"
+              style="display: flex; flex-wrap: wrap; gap: 6px; min-height: 30px"
+            ></div>
+          </div>
+          <button
+            class="btn btn-gold"
+            onclick="finishBuild()"
+            style="width: 100%; margin-top: 18px"
+          >
+            ✅ READY FOR BATTLE!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BATTLE SCREEN -->
+    <div id="battleScreen" class="screen">
+      <div class="battle-header">
+        <h2>⚔️ SUPERHUMAN BATTLE ARENA ⚔️</h2>
+        <div
+          id="battleTurnBadge"
+          style="font-size: 0.85rem; color: var(--accent2); margin-top: 6px"
+        ></div>
+      </div>
+      <div class="battle-arena" id="battleArena"></div>
+      <div class="battle-actions">
+        <div id="battleActionBtns" class="action-btns"></div>
+      </div>
+      <div class="battle-log" id="battleLog"></div>
+    </div>
+
+    <!-- BATTLE WINNER -->
+    <div id="battleWinnerScreen" class="screen">
+      <div class="trophy-display">🏆</div>
+      <div class="winner-title">🧬 BIOLOGY CHAMPIONS 🧬</div>
+      <div class="winner-name" id="battleWinnerName"></div>
+      <div class="final-stats-grid" id="finalStatsGrid"></div>
+      <div
+        id="fullScoreTable"
+        style="width: 100%; max-width: 500px; margin-bottom: 28px"
+      ></div>
+      <button class="btn btn-primary" onclick="confirmReset()">
+        ↺ Play Again
+      </button>
+    </div>
+
+    <script>
+      // ===================================================
+      // DATA
+      // ===================================================
+      const CATEGORIES = [
+        { id: "cells", label: "🔬 Cells" },
+        { id: "dna", label: "🧬 DNA & Genetics" },
+        { id: "mitosis", label: "⚡ Mitosis" },
+        { id: "meiosis", label: "🧪 Meiosis" },
+        { id: "challenge", label: "🎯 Challenge Zone" },
+      ];
+      const POINT_VALUES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+
+      const ALL_QUESTIONS = {
+        cells: [
+          {
+            pts: 100,
+            q: "What organelle controls the activities of the cell?",
+            a: "Nucleus",
+          },
+          {
+            pts: 200,
+            q: "Which organelle produces energy for the cell?",
+            a: "Mitochondria",
+          },
+          {
+            pts: 300,
+            q: "What structure controls what enters and leaves the cell?",
+            a: "Cell membrane",
+          },
+          {
+            pts: 400,
+            q: "Which cells contain chloroplasts?",
+            a: "Plant cells",
+          },
+          {
+            pts: 500,
+            q: "What is the jelly-like substance filling the cell called?",
+            a: "Cytoplasm",
+          },
+          {
+            pts: 600,
+            q: "Why is the cell membrane important to the cell?",
+            a: "It regulates what enters and leaves the cell.",
+          },
+          {
+            pts: 700,
+            q: "Name one difference between plant and animal cells.",
+            a: "Plant cells have a cell wall and chloroplasts; animal cells do not.",
+          },
+          {
+            pts: 800,
+            q: "Which organelle contains the cell's genetic information?",
+            a: "Nucleus",
+          },
+          {
+            pts: 900,
+            q: "Why are mitochondria called the powerhouse of the cell?",
+            a: "They release energy from food through respiration.",
+          },
+          {
+            pts: 1000,
+            q: "A cell loses its membrane. What major problem would occur?",
+            a: "It could no longer regulate what enters and leaves — the cell would die.",
+          },
+        ],
+        dna: [
+          {
+            pts: 100,
+            q: "What does DNA stand for?",
+            a: "Deoxyribonucleic Acid",
+          },
+          { pts: 200, q: "Where is DNA found in the cell?", a: "Nucleus" },
+          { pts: 300, q: "What shape is DNA?", a: "Double helix" },
+          {
+            pts: 400,
+            q: "What molecule carries genetic information?",
+            a: "DNA",
+          },
+          {
+            pts: 500,
+            q: "What structures in the cell are made of DNA?",
+            a: "Chromosomes",
+          },
+          {
+            pts: 600,
+            q: "What is a gene?",
+            a: "A section of DNA that contains instructions for a trait.",
+          },
+          {
+            pts: 700,
+            q: "Why is DNA important for living things?",
+            a: "It contains genetic instructions for building and running organisms.",
+          },
+          {
+            pts: 800,
+            q: "What is the relationship between DNA and chromosomes?",
+            a: "Chromosomes are made of DNA.",
+          },
+          {
+            pts: 900,
+            q: "Why must DNA be copied before cell division?",
+            a: "So each new cell receives a complete copy of genetic information.",
+          },
+          {
+            pts: 1000,
+            q: "If DNA is not copied correctly before division, what could happen?",
+            a: "New cells may have incorrect genetic information, causing mutations or cell malfunction.",
+          },
+        ],
+        mitosis: [
+          {
+            pts: 100,
+            q: "What is mitosis?",
+            a: "Cell division that produces two identical daughter cells.",
+          },
+          {
+            pts: 200,
+            q: "How many daughter cells are produced in mitosis?",
+            a: "Two",
+          },
+          {
+            pts: 300,
+            q: "Are the daughter cells in mitosis identical or different?",
+            a: "Identical",
+          },
+          {
+            pts: 400,
+            q: "Why does mitosis occur in the body?",
+            a: "For growth and repair.",
+          },
+          {
+            pts: 500,
+            q: "Does chromosome number stay the same or change during mitosis?",
+            a: "Stays the same.",
+          },
+          {
+            pts: 600,
+            q: "Why is mitosis important in healing a wound?",
+            a: "It produces new identical cells to replace damaged tissue.",
+          },
+          {
+            pts: 700,
+            q: "What happens to DNA before mitosis begins?",
+            a: "It replicates (makes a copy).",
+          },
+          {
+            pts: 800,
+            q: "A child grows taller. Which process is responsible?",
+            a: "Mitosis",
+          },
+          {
+            pts: 900,
+            q: "Why must daughter cells be identical in mitosis?",
+            a: "To maintain proper cell function and accurate repair.",
+          },
+          {
+            pts: 1000,
+            q: "Explain why mitosis is essential for growth and repair.",
+            a: "It produces identical cells that replace old or damaged cells, maintaining body function.",
+          },
+        ],
+        meiosis: [
+          {
+            pts: 100,
+            q: "What is meiosis?",
+            a: "Cell division that produces reproductive cells (gametes).",
+          },
+          {
+            pts: 200,
+            q: "How many cells are produced at the end of meiosis?",
+            a: "Four",
+          },
+          {
+            pts: 300,
+            q: "Are the cells produced by meiosis identical or different?",
+            a: "Different — they are genetically unique.",
+          },
+          {
+            pts: 400,
+            q: "What type of cells does meiosis produce?",
+            a: "Gametes (sperm and egg cells)",
+          },
+          {
+            pts: 500,
+            q: "What happens to chromosome number during meiosis?",
+            a: "It is halved.",
+          },
+          {
+            pts: 600,
+            q: "Why is meiosis important?",
+            a: "It produces reproductive cells needed for sexual reproduction.",
+          },
+          {
+            pts: 700,
+            q: "How many chromosomes do human gametes contain?",
+            a: "23",
+          },
+          {
+            pts: 800,
+            q: "Why are cells produced by meiosis genetically different from each other?",
+            a: "Genetic variation occurs during meiosis through crossing over and random separation.",
+          },
+          {
+            pts: 900,
+            q: "What would happen if meiosis did not halve the chromosome number?",
+            a: "Chromosome numbers would double with each generation.",
+          },
+          {
+            pts: 1000,
+            q: "Explain why meiosis is important for genetic diversity.",
+            a: "It creates genetically different cells, increasing variation within populations.",
+          },
+        ],
+        challenge: [
+          {
+            pts: 100,
+            q: "How are mitosis and meiosis different in the number of cells produced?",
+            a: "Mitosis produces 2 identical cells; meiosis produces 4 genetically different cells.",
+          },
+          {
+            pts: 200,
+            q: "Which process heals a wound — mitosis or meiosis? Which produces offspring?",
+            a: "Mitosis heals wounds; meiosis produces reproductive cells for offspring.",
+          },
+          {
+            pts: 300,
+            q: "How are DNA and chromosomes related?",
+            a: "Chromosomes are made of DNA.",
+          },
+          {
+            pts: 400,
+            q: "Why is the nucleus important to the cell?",
+            a: "It controls cell activities and contains DNA (the genetic information).",
+          },
+          {
+            pts: 500,
+            q: "What would happen if all your body cells divided by meiosis instead of mitosis?",
+            a: "Cells would have half the chromosome number — they'd be non-functional gametes, not normal body cells.",
+          },
+          {
+            pts: 600,
+            q: "Why does DNA need to replicate before both mitosis and meiosis?",
+            a: "So each new cell receives a complete copy of the genetic information.",
+          },
+          {
+            pts: 700,
+            q: "Compare chromosome number in cells after mitosis versus after meiosis.",
+            a: "After mitosis: same as parent (e.g. 46). After meiosis: half (e.g. 23).",
+          },
+          {
+            pts: 800,
+            q: "Give two ways plant cells differ from animal cells.",
+            a: "Any two: cell wall, chloroplasts, large vacuole (animal cells lack these).",
+          },
+          {
+            pts: 900,
+            q: "Why is genetic variation produced by meiosis beneficial for a species?",
+            a: "It increases diversity and helps species adapt and survive changing environments.",
+          },
+          {
+            pts: 1000,
+            q: "A scientist finds cells with half the normal chromosome number. Which process created them and why?",
+            a: "Meiosis — it halves chromosome number to produce gametes for sexual reproduction.",
+          },
+        ],
+      };
+
+      const POWER_ROUND_QUESTIONS = [
+        {
+          num: 41,
+          pts: 500,
+          q: "A skin wound is healing. Which process occurs and why?",
+          a: "Mitosis — identical cells are needed to replace and repair damaged tissue.",
+        },
+        {
+          num: 42,
+          pts: 500,
+          q: "A cell starts with 46 chromosomes and produces four cells each with 23. Which process occurred?",
+          a: "Meiosis",
+        },
+        {
+          num: 43,
+          pts: 600,
+          q: "A student says mitosis and meiosis both produce identical cells. Correct this mistake.",
+          a: "Only mitosis produces identical cells. Meiosis produces genetically different cells.",
+        },
+        {
+          num: 44,
+          pts: 600,
+          q: "Why must DNA replicate before both mitosis and meiosis can occur?",
+          a: "So each new cell receives a complete set of genetic information.",
+        },
+        {
+          num: 45,
+          pts: 700,
+          q: "Compare the number of cells produced in mitosis vs meiosis.",
+          a: "Mitosis produces 2 cells; meiosis produces 4 cells.",
+        },
+        {
+          num: 46,
+          pts: 700,
+          q: "Which process is responsible for growth, and which for reproduction?",
+          a: "Mitosis = growth and repair. Meiosis = production of reproductive cells.",
+        },
+        {
+          num: 47,
+          pts: 800,
+          q: "A division process produces cells that are genetically unique. How do you identify the process?",
+          a: "It is meiosis — it creates genetically varied cells through variation during division.",
+        },
+        {
+          num: 48,
+          pts: 900,
+          q: "Give TWO differences between mitosis and meiosis.",
+          a: "Any two: 2 vs 4 cells / Identical vs different / Growth vs reproduction / Same vs halved chromosome number.",
+        },
+        {
+          num: 49,
+          pts: 900,
+          q: "Why is genetic variation in a species beneficial for survival?",
+          a: "Variation means some individuals are better adapted to survive environmental changes.",
+        },
+        {
+          num: 50,
+          pts: 1000,
+          q: "A scientist finds cells with half the normal chromosome number. Which process created them and give a full explanation.",
+          a: "Meiosis. It halves chromosome number during reproductive cell formation so that when two gametes fuse, normal chromosome number is restored.",
+        },
+      ];
+
+      const MUTATION_POWERS = [
+        {
+          key: "shield",
+          icon: "🛡",
+          name: "Cell Shield",
+          cost: 300,
+          desc: "Use Once · Ignore a wrong answer — no points lost.",
+          effect: "shield",
+        },
+        {
+          key: "time",
+          icon: "⚡",
+          name: "Extra Thinking Time",
+          cost: 250,
+          desc: "Use Once · Gain 15 extra seconds on a question.",
+          effect: "time",
+        },
+        {
+          key: "hyper",
+          icon: "🧬",
+          name: "Hyper Mutation",
+          cost: 500,
+          desc: "Use Once · Double points from one correct answer.",
+          effect: "double",
+        },
+        {
+          key: "repair",
+          icon: "❤️",
+          name: "DNA Repair",
+          cost: 400,
+          desc: "Use Once · Recover 50% of lost points after a wrong answer.",
+          effect: "repair",
+        },
+        {
+          key: "second",
+          icon: "🎯",
+          name: "Second Chance",
+          cost: 600,
+          desc: "Use Once · Retry a missed question.",
+          effect: "retry",
+        },
+        {
+          key: "theft",
+          icon: "🦠",
+          name: "Gene Theft",
+          cost: 700,
+          desc: "Use Once · Correct answer steals 200 pts from another team.",
+          effect: "steal",
+        },
+        {
+          key: "master",
+          icon: "👑",
+          name: "Master Mutation",
+          cost: 1000,
+          desc: "Use Once · Triple points from one correct answer.",
+          effect: "triple",
+        },
+      ];
+
+      const MITOSIS_POWERS = [
+        {
+          key: "regen",
+          icon: "🛡",
+          name: "Regeneration",
+          cost: 10,
+          stat: "regen",
+          val: 3,
+          desc: "Restore 3 HP each turn.",
+        },
+        {
+          key: "strength",
+          icon: "💪",
+          name: "Growth Strength",
+          cost: 12,
+          stat: "attack",
+          val: 5,
+          desc: "Increase attack by 5.",
+        },
+        {
+          key: "repair",
+          icon: "⚡",
+          name: "Rapid Repair",
+          cost: 8,
+          stat: "defense",
+          val: 3,
+          desc: "Reduce damage taken by 3.",
+        },
+        {
+          key: "armor",
+          icon: "🧱",
+          name: "Cellular Armor",
+          cost: 15,
+          stat: "defense",
+          val: 6,
+          desc: "Increase defense by 6.",
+        },
+        {
+          key: "clone",
+          icon: "🔄",
+          name: "Clone Surge",
+          cost: 20,
+          stat: "speed",
+          val: 8,
+          desc: "Chance to attack twice; +8 speed.",
+        },
+      ];
+      const MEIOSIS_POWERS = [
+        {
+          key: "adapt",
+          icon: "⚡",
+          name: "Genetic Adaptation",
+          cost: 12,
+          stat: "speed",
+          val: 6,
+          desc: "Dodge chance; +6 speed.",
+        },
+        {
+          key: "burst",
+          icon: "🧬",
+          name: "Mutation Burst",
+          cost: 15,
+          stat: "attack",
+          val: 7,
+          desc: "Critical strike chance; +7 attack.",
+        },
+        {
+          key: "diverse",
+          icon: "🎯",
+          name: "Diversity Advantage",
+          cost: 10,
+          stat: "attack",
+          val: 3,
+          desc: "Random stat boosts; +3 attack.",
+        },
+        {
+          key: "evolve",
+          icon: "🌪",
+          name: "Evolution Leap",
+          cost: 18,
+          stat: "attack",
+          val: 10,
+          desc: "Massive power boost; +10 attack.",
+        },
+        {
+          key: "chaos",
+          icon: "🧪",
+          name: "Chromosome Chaos",
+          cost: 20,
+          stat: "speed",
+          val: 12,
+          desc: "Unpredictable attacks; +12 speed.",
+        },
+      ];
+
+      const ALL_STUDENTS = [
+        "Karma",
+        "Sameh",
+        "Mohamed",
+        "Adam",
+        "Adham",
+        "Asser",
+        "Malak",
+        "Jana",
+        "Mazen",
+        "Ali",
+        "Remas",
+        "Omar",
+        "Mariam",
+        "Ganah",
+        "Retal",
+      ];
+      const PERMANENT_LOCKED = ["Omar", "Mariam", "Retal"];
+      const TEAM_COLORS = [
+        "#3b82f6",
+        "#8b5cf6",
+        "#22c55e",
+        "#f59e0b",
+        "#ef4444",
+        "#06b6d4",
+        "#ec4899",
+        "#84cc16",
+      ];
+
+      // ===================================================
+      // WHEEL CONFIG
+      // ===================================================
+      let wheelConfig = {
+        numTeams: 5,
+        studentsPerTeam: 3,
+        absentStudents: new Set(),
+      };
+      let wheelData = {
+        revealSequence: [],
+        teams: [],
+        studentsPerTeam: 3,
+        revealCount: 0,
+        isSpinning: false,
+        done: false,
+        numTeams: 5,
+        preassignedTeams: [],
+      };
+
+      // ===================================================
+      // STATE
+      // ===================================================
+      let state = {
+        teams: [],
+        currentTeamIdx: 0,
+        usedQuestions: {},
+        currentQuestion: null,
+        doubleIt: false,
+        muted: false,
+        phase: "config",
+        mutationMarketBuyer: 0,
+        teamPowers: {},
+        teamPowersUsed: {},
+        activePowerEffect: null,
+        activePowerTeamIdx: -1,
+        prCurrentQuestion: null,
+        prUsed: {},
+        alliances: [],
+        allianceSides: [null, null],
+        currentBuilderAlliance: 0,
+        battleTurn: 0,
+        battleHP: [100, 100],
+        battleRound: 1,
+        battleLog: [],
+        battleWinner: null,
+        challengeOpponent: -1,
+        answeringTeamIdx: -1,
+        answeringBid: 0,
+        otherTeamIdx: -1,
+        otherBid: 0,
+      };
+
+      function saveState() {
+        try {
+          const s = JSON.parse(JSON.stringify(state));
+          localStorage.setItem("bioShowdown_v1", JSON.stringify(s));
+        } catch (e) {}
+      }
+      function loadState() {
+        try {
+          const raw = localStorage.getItem("bioShowdown_v1");
+          if (!raw) return false;
+          const s = JSON.parse(raw);
+          if (!s.teams || !s.teams.length) return false;
+          state = { ...state, ...s };
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+      function escHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      // ===================================================
+      // AUDIO
+      // ===================================================
+      let audioCtx = null;
+      function getCtx() {
+        if (!audioCtx)
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        return audioCtx;
+      }
+      function playTone(freq = 440, dur = 0.12, type = "sine") {
+        if (state.muted) return;
+        try {
+          const ctx = getCtx();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = type;
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+          osc.start();
+          osc.stop(ctx.currentTime + dur);
+        } catch (e) {}
+      }
+      function toggleMute() {
+        state.muted = !state.muted;
+        document.getElementById("muteBtn").textContent = state.muted
+          ? "🔇"
+          : "🔊";
+      }
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+      }
+
+      // ===================================================
+      // INIT
+      // ===================================================
+      window.addEventListener("DOMContentLoaded", () => {
+        if (
+          loadState() &&
+          state.phase !== "config" &&
+          state.phase !== "wheel"
+        ) {
+          if (state.phase === "game") {
+            showScreen("gameScreen");
+            renderGame();
+          } else if (state.phase === "mutationMarket") {
+            showScreen("mutationMarketScreen");
+            renderMutationMarket();
+          } else if (state.phase === "powerRound") {
+            showScreen("powerRoundScreen");
+            renderPowerRound();
+          } else if (state.phase === "allianceSetup") {
+            showScreen("allianceSetupScreen");
+            renderAllianceSetup();
+          } else if (state.phase === "superhumanBuilder") {
+            showScreen("superhumanBuilderScreen");
+            renderBuilder();
+          } else if (state.phase === "battle") {
+            showScreen("battleScreen");
+            renderBattle();
+          } else if (state.phase === "battleWinner") {
+            showScreen("battleWinnerScreen");
+            renderBattleWinner();
+          } else {
+            showScreen("configScreen");
+            initConfigScreen();
+          }
+        } else {
+          showScreen("configScreen");
+          initConfigScreen();
+        }
+      });
+
+      // ===================================================
+      // TURN ANNOUNCEMENT
+      // ===================================================
+      function showTurnAnnouncement(teamName, callback) {
+        const overlay = document.getElementById("turnOverlay");
+        document.getElementById("turnOverlayName").textContent =
+          teamName + "'s Turn";
+        const bar = document.getElementById("turnOverlayProgress");
+        const parent = bar.parentElement;
+        const newBar = bar.cloneNode(true);
+        parent.replaceChild(newBar, bar);
+        overlay.classList.add("visible");
+        playTone(660, 0.08, "sine");
+        setTimeout(() => playTone(880, 0.08, "sine"), 200);
+        setTimeout(() => {
+          overlay.classList.remove("visible");
+          if (callback) callback();
+        }, 1600);
+      }
+
+      // ===================================================
+      // CONFIG
+      // ===================================================
+      function initConfigScreen() {
+        updateConfigDerived();
+        renderAbsentList();
+      }
+      function adjustConfig(key, delta) {
+        if (key === "numTeams")
+          wheelConfig.numTeams = Math.max(
+            2,
+            Math.min(8, wheelConfig.numTeams + delta),
+          );
+        else if (key === "studentsPerTeam")
+          wheelConfig.studentsPerTeam = Math.max(
+            1,
+            Math.min(8, wheelConfig.studentsPerTeam + delta),
+          );
+        document.getElementById("cfgNumTeams").textContent =
+          wheelConfig.numTeams;
+        document.getElementById("cfgStudentsPerTeam").textContent =
+          wheelConfig.studentsPerTeam;
+        updateConfigDerived();
+      }
+      function updateConfigDerived() {
+        const present = ALL_STUDENTS.filter(
+          (s) => !wheelConfig.absentStudents.has(s),
+        );
+        const ideal = wheelConfig.numTeams * wheelConfig.studentsPerTeam;
+        const el = document.getElementById("cfgDerived");
+        let lines = [
+          `<b>${present.length}</b> present · <b>${wheelConfig.numTeams} teams × ${wheelConfig.studentsPerTeam}</b> = ${ideal} slots`,
+        ];
+        if (present.length < wheelConfig.numTeams)
+          lines.push(
+            '<span style="color:var(--danger)">⚠ Fewer students than teams</span>',
+          );
+        else if (present.length < ideal)
+          lines.push(
+            `<span style="color:var(--warning)">⚠ ${ideal - present.length} empty slot(s)</span>`,
+          );
+        else if (present.length > ideal)
+          lines.push(
+            `<span style="color:var(--warning)">⚠ ${present.length - ideal} student(s) unassigned</span>`,
+          );
+        else
+          lines.push(
+            '<span style="color:var(--success)">✔ Perfect fit</span>',
+          );
+        el.innerHTML = lines.join("<br>");
+      }
+      function renderAbsentList() {
+        const c = document.getElementById("absentList");
+        c.innerHTML = "";
+        ALL_STUDENTS.forEach((name) => {
+          const isAbsent = wheelConfig.absentStudents.has(name);
+          const div = document.createElement("div");
+          div.className = "absent-item" + (isAbsent ? " absent-checked" : "");
+          div.id = `absent_${name}`;
+          div.innerHTML = `<input type="checkbox" ${isAbsent ? "checked" : ""} onchange="toggleAbsent('${escHtml(name)}')" id="chk_${escHtml(name)}"/><span style="font-size:.92rem;font-weight:600;">${escHtml(name)}</span>`;
+          div.onclick = (e) => {
+            if (e.target.tagName !== "INPUT")
+              document.getElementById(`chk_${name}`).click();
+          };
+          c.appendChild(div);
+        });
+      }
+      function toggleAbsent(name) {
+        if (wheelConfig.absentStudents.has(name))
+          wheelConfig.absentStudents.delete(name);
+        else wheelConfig.absentStudents.add(name);
+        const item = document.getElementById(`absent_${name}`);
+        if (item)
+          item.classList.toggle(
+            "absent-checked",
+            wheelConfig.absentStudents.has(name),
+          );
+        updateConfigDerived();
+      }
+      function proceedToWheel() {
+        const present = ALL_STUDENTS.filter(
+          (s) => !wheelConfig.absentStudents.has(s),
+        );
+        const errors = [];
+        if (present.length < wheelConfig.numTeams)
+          errors.push(
+            `Not enough present students (${present.length}) for ${wheelConfig.numTeams} teams.`,
+          );
+        const lockedPresent = PERMANENT_LOCKED.filter((s) =>
+          present.includes(s),
+        );
+        if (lockedPresent.length > wheelConfig.studentsPerTeam)
+          errors.push(
+            `Locked group has ${lockedPresent.length} members but team size is ${wheelConfig.studentsPerTeam}.`,
+          );
+        const el = document.getElementById("configError");
+        if (errors.length) {
+          el.innerHTML = errors.map((e) => `• ${e}`).join("<br>");
+          el.classList.add("visible");
+          return;
+        }
+        el.classList.remove("visible");
+        computeAndInitWheel();
+        showScreen("wheelScreen");
+      }
+
+      // ===================================================
+      // TEAM ASSIGNMENT
+      // ===================================================
+      function computeAndInitWheel() {
+        const { numTeams, studentsPerTeam } = wheelConfig;
+        const present = ALL_STUDENTS.filter(
+          (s) => !wheelConfig.absentStudents.has(s),
+        );
+        const lockedPresent = PERMANENT_LOCKED.filter((s) =>
+          present.includes(s),
+        );
+        const nonLocked = shuffle(
+          present.filter((s) => !PERMANENT_LOCKED.includes(s)),
+        );
+        const teams = Array.from({ length: numTeams }, () => []);
+        const lockedTeamIdx = Math.floor(Math.random() * numTeams);
+        lockedPresent.forEach((s) => teams[lockedTeamIdx].push(s));
+        let pool = [...nonLocked];
+        for (let slot = 0; slot < studentsPerTeam && pool.length > 0; slot++) {
+          for (let ti = 0; ti < numTeams && pool.length > 0; ti++) {
+            if (teams[ti].length === slot) teams[ti].push(pool.shift());
+          }
+        }
+        teams.forEach((t) => shuffle(t));
+        const sequence = [];
+        teams.forEach((members, ti) =>
+          members.forEach((name) => sequence.push({ name, teamIdx: ti })),
+        );
+        shuffle(sequence);
+        wheelData = {
+          revealSequence: sequence,
+          teams: teams.map(() => []),
+          studentsPerTeam,
+          revealCount: 0,
+          isSpinning: false,
+          done: false,
+          numTeams,
+          preassignedTeams: teams,
+        };
+        renderTeamsRevealGrid();
+        document.getElementById("wheelRevealCounter").textContent =
+          `SPIN TO REVEAL · 0 / ${sequence.length}`;
+      }
+      function renderTeamsRevealGrid() {
+        const container = document.getElementById("teamsRevealGrid");
+        container.innerHTML = "";
+        for (let ti = 0; ti < wheelData.numTeams; ti++) {
+          const members = wheelData.teams[ti] || [];
+          const expectedSize = (wheelData.preassignedTeams[ti] || []).length;
+          const isFull = members.length >= expectedSize && expectedSize > 0;
+          let isActive = false;
+          if (
+            !wheelData.done &&
+            wheelData.revealCount < wheelData.revealSequence.length
+          ) {
+            const next = wheelData.revealSequence[wheelData.revealCount];
+            if (next && next.teamIdx === ti) isActive = true;
+          }
+          let chips = "";
+          for (let i = 0; i < expectedSize; i++) {
+            chips += members[i]
+              ? `<div class="member-chip" style="animation-delay:${i * 0.08}s">${escHtml(members[i])}</div>`
+              : `<div class="member-slot">···</div>`;
+          }
+          container.innerHTML += `<div class="team-reveal-card ${isActive ? "active-team" : ""} ${isFull ? "full-team" : ""}">
+      <div class="team-reveal-header"><div class="team-color-dot" style="background:${TEAM_COLORS[ti % TEAM_COLORS.length]}"></div><h4>Team ${ti + 1}</h4>${isFull ? '<span style="font-size:.7rem;color:var(--success);margin-left:auto;">✔ READY</span>' : ""}</div>
+      <div class="team-member-chips">${chips}</div>
+    </div>`;
+        }
+      }
+      function spinWheel() {
+        if (wheelData.isSpinning || wheelData.done) return;
+        if (wheelData.revealCount >= wheelData.revealSequence.length) return;
+        const entry = wheelData.revealSequence[wheelData.revealCount];
+        wheelData.isSpinning = true;
+        const btn = document.getElementById("spinBtn");
+        btn.disabled = true;
+        btn.textContent = "🌀 Spinning...";
+        const strip = document.getElementById("wheelStrip");
+        const ITEM_H = 80,
+          DECOYS = 25,
+          AFTER = 3;
+        const pool = wheelData.revealSequence.map((e) => e.name);
+        let items = [];
+        for (let i = 0; i < DECOYS; i++)
+          items.push(pool[Math.floor(Math.random() * pool.length)]);
+        items.push(entry.name);
+        for (let i = 0; i < AFTER; i++)
+          items.push(pool[Math.floor(Math.random() * pool.length)]);
+        strip.style.transition = "none";
+        strip.style.transform = "translateY(0)";
+        strip.innerHTML = items
+          .map(
+            (n, idx) =>
+              `<div class="wheel-item${idx === DECOYS ? " target-item" : ""}">${escHtml(n)}</div>`,
+          )
+          .join("");
+        strip.getBoundingClientRect();
+        const finalY = -(DECOYS * ITEM_H - 160);
+        setTimeout(() => {
+          strip.style.transition = "transform 4.2s cubic-bezier(.12,.88,.25,1)";
+          strip.style.transform = `translateY(${finalY}px)`;
+          playTone(220, 0.05, "sawtooth");
+        }, 50);
+        setTimeout(() => onSpinComplete(entry.name, entry.teamIdx), 4600);
+      }
+      function onSpinComplete(winner, teamIdx) {
+        const strip = document.getElementById("wheelStrip");
+        strip.querySelector(".target-item").classList.add("winner-item");
+        playTone(659, 0.12, "sine");
+        setTimeout(() => playTone(784, 0.12, "sine"), 140);
+        setTimeout(() => playTone(1047, 0.14, "sine"), 280);
+        wheelData.teams[teamIdx].push(winner);
+        wheelData.revealCount++;
+        document.getElementById("winnerBanner").innerHTML =
+          `<div class="w-label">Reveal #${wheelData.revealCount}</div><div class="w-revealed">✨ ${escHtml(winner)}</div><div class="w-team">→ Team ${teamIdx + 1}</div>`;
+        document.getElementById("wheelRevealCounter").textContent =
+          `SPIN TO REVEAL · ${wheelData.revealCount} / ${wheelData.revealSequence.length}`;
+        renderTeamsRevealGrid();
+        wheelData.isSpinning = false;
+        if (wheelData.revealCount >= wheelData.revealSequence.length) {
+          wheelData.done = true;
+          showTeamsReady();
+        } else {
+          const btn = document.getElementById("spinBtn");
+          btn.disabled = false;
+          btn.textContent = "🎰 SPIN!";
+        }
+      }
+      function showTeamsReady() {
+        document.getElementById("spinBtnArea").innerHTML =
+          `<div class="teams-ready-banner"><h2>🎉 TEAMS READY!</h2><p style="color:var(--gray);margin-bottom:20px;">All ${wheelData.revealCount} students assigned!</p><button class="btn btn-gold" onclick="startGameFromWheel()" style="font-size:1.1rem;padding:18px 44px;">▶ START BIOLOGY SHOWDOWN</button></div>`;
+      }
+      function startGameFromWheel() {
+        state.teams = wheelData.teams.map((members, i) => ({
+          name: `Team ${i + 1}`,
+          score: 0,
+          members,
+        }));
+        state.teamPowers = {};
+        state.teamPowersUsed = {};
+        state.teams.forEach((_, i) => {
+          state.teamPowers[i] = [];
+          state.teamPowersUsed[i] = {};
+        });
+        saveState();
+        showScreen("gameScreen");
+        renderGame();
+      }
+
+      // ===================================================
+      // GAME BOARD
+      // ===================================================
+      let activeCategoryId = null;
+      function renderGame() {
+        state.phase = "game";
+        renderScoreboard();
+        renderBoard();
+        updateCurrentTurn();
+        updateQuestionsRemaining();
+        saveState();
+      }
+      function renderScoreboard() {
+        const sorted = [...state.teams]
+          .map((t, i) => ({ ...t, idx: i }))
+          .sort((a, b) => b.score - a.score);
+        document.getElementById("scoreboard").innerHTML = sorted
+          .map(
+            (t, rank) => `
+    <div class="score-card ${rank === 0 && sorted.length > 1 ? "leading" : ""} ${t.idx === state.currentTeamIdx ? "active-turn" : ""}">
+      ${rank === 0 && sorted.length > 1 ? '<div class="rank-badge">👑</div>' : ""}
+      <div class="team-name-display">${escHtml(t.name)}</div>
+      <div class="team-score">${t.score.toLocaleString()}</div>
+    </div>`,
+          )
+          .join("");
+      }
+      function renderBoard() {
+        const board = document.getElementById("categoryBoard");
+        board.innerHTML = "";
+        if (!activeCategoryId) {
+          board.className = "category-picker";
+          board.innerHTML = CATEGORIES.map((cat) => {
+            const used = POINT_VALUES.filter(
+              (pts) => !!state.usedQuestions[`${cat.id}_${pts}`],
+            ).length;
+            return `<button class="cat-pick-btn ${cat.id === "challenge" ? "challenge-pick" : ""}" onclick="openCategoryView('${cat.id}')">
+        <span class="cat-pick-label">${cat.label}</span>
+        <span class="cat-pick-progress">${used}/10 used</span>
+      </button>`;
+          }).join("");
+        } else {
+          const cat = CATEGORIES.find((c) => c.id === activeCategoryId);
+          board.className = "category-view";
+          const cells = POINT_VALUES.map((pts) => {
+            const key = `${activeCategoryId}_${pts}`;
+            const used = !!state.usedQuestions[key];
+            const isC = activeCategoryId === "challenge";
+            return `<div class="q-cell ${used ? "used" : ""} ${isC && !used ? "challenge-cell" : ""}" onclick="${used ? "" : ` openQuestion('${activeCategoryId}',${pts})`}"><div class="q-pts">${pts}</div></div>`;
+          }).join("");
+          board.innerHTML = `<div class="cat-view-header"><button class="btn btn-gray cat-back-btn" onclick="backToCategories()">← Categories</button><div class="cat-view-title ${activeCategoryId === "challenge" ? "challenge-title" : ""}">${cat.label}</div></div><div class="cat-view-grid">${cells}</div>`;
+        }
+      }
+      function openCategoryView(catId) {
+        activeCategoryId = catId;
+        renderBoard();
+      }
+      function backToCategories() {
+        activeCategoryId = null;
+        renderBoard();
+      }
+      function updateCurrentTurn() {
+        if (state.teams.length > 0) {
+          document.getElementById("currentTurnName").textContent =
+            state.teams[state.currentTeamIdx].name;
+          renderScoreboard();
+        }
+      }
+      function updateQuestionsRemaining() {
+        const rem = 40 - Object.keys(state.usedQuestions).length;
+        document.getElementById("questionsRemainingDisplay").textContent =
+          `${rem} question${rem !== 1 ? "s" : ""} remaining (Phase 1)`;
+      }
+      function autoNextTeam() {
+        state.currentTeamIdx = (state.currentTeamIdx + 1) % state.teams.length;
+        saveState();
+        const nextName = state.teams[state.currentTeamIdx].name;
+        showTurnAnnouncement(nextName, () => {
+          updateCurrentTurn();
+          const bar = document.getElementById("currentTurnBar");
+          bar.classList.add("active-flash");
+          setTimeout(() => bar.classList.remove("active-flash"), 700);
+          playTone(660, 0.08, "sine");
+          if (Object.keys(state.usedQuestions).length >= 40)
+            setTimeout(() => {
+              if (
+                confirm(
+                  "All 40 questions complete! Move to the Mutation Market?",
+                )
+              )
+                goToMutationMarket();
+            }, 200);
+        });
+      }
+      function manualNextTeam() {
+        state.currentTeamIdx = (state.currentTeamIdx + 1) % state.teams.length;
+        updateCurrentTurn();
+        saveState();
+        const bar = document.getElementById("currentTurnBar");
+        bar.classList.add("active-flash");
+        setTimeout(() => bar.classList.remove("active-flash"), 700);
+        playTone(660, 0.08, "sine");
+      }
+
+      // ===================================================
+      // QUESTION MODAL
+      // ===================================================
+      function openQuestion(catId, pts) {
+        const key = `${catId}_${pts}`;
+        if (state.usedQuestions[key]) return;
+        if (catId === "challenge") {
+          state.currentQuestion = {
+            catId,
+            pts,
+            q: ALL_QUESTIONS[catId].find((q) => q.pts === pts).q,
+            a: ALL_QUESTIONS[catId].find((q) => q.pts === pts).a,
+            key,
+          };
+          openChallengeModal();
+          return;
+        }
+        const qData = ALL_QUESTIONS[catId].find((q) => q.pts === pts);
+        const cat = CATEGORIES.find((c) => c.id === catId);
+        state.currentQuestion = { catId, pts, q: qData.q, a: qData.a, key };
+        state.doubleIt = false;
+        document.getElementById("qModalCat").textContent = cat.label;
+        document.getElementById("qModalPts").textContent = pts + " pts";
+        document.getElementById("qModalPts").className = "modal-pts";
+        document.getElementById("qModalQuestion").textContent = qData.q;
+        document.getElementById("qModalQuestion").classList.remove("visible");
+        const ansEl = document.getElementById("qModalAnswer");
+        ansEl.textContent = qData.a;
+        ansEl.classList.remove("visible");
+        document.getElementById("doubleItSection").style.display = "block";
+        document.getElementById("doubleActiveBadge").style.display = "none";
+        document.getElementById("qModalActions").innerHTML =
+          `<button class="btn btn-gray" onclick="revealAnswer()">👁 REVEAL ANSWER</button>`;
+        document.getElementById("questionModal").classList.add("open");
+        playTone(330, 0.08, "sine");
+      }
+      function setDouble(active) {
+        state.doubleIt = active;
+        document.getElementById("doubleItSection").style.display = "none";
+        document.getElementById("qModalQuestion").classList.add("visible");
+        if (active) {
+          document.getElementById("doubleActiveBadge").style.display = "block";
+          document.getElementById("qModalPts").textContent =
+            `${state.currentQuestion.pts} pts (×2 = ${state.currentQuestion.pts * 2})`;
+          document.getElementById("qModalPts").className =
+            "modal-pts double-active";
+          const flash = document.createElement("div");
+          flash.className = "double-flash";
+          document.body.appendChild(flash);
+          setTimeout(() => flash.remove(), 700);
+          playTone(440, 0.12);
+          setTimeout(() => playTone(880, 0.12), 160);
+        } else {
+          document.getElementById("doubleActiveBadge").style.display = "none";
+          document.getElementById("qModalPts").textContent =
+            `${state.currentQuestion.pts} pts`;
+          document.getElementById("qModalPts").className = "modal-pts";
+          playTone(520, 0.08, "sine");
+        }
+      }
+      function revealAnswer() {
+        document.getElementById("qModalAnswer").classList.add("visible");
+        document.getElementById("qModalActions").innerHTML =
+          `<button class="btn btn-success" onclick="awardPoints(true)">✔ CORRECT</button><button class="btn btn-danger" onclick="awardPoints(false)">✖ INCORRECT</button>`;
+      }
+      function awardPoints(correct) {
+        const mult = state.doubleIt ? 2 : 1;
+        const change = state.currentQuestion.pts * mult * (correct ? 1 : -1);
+        state.teams[state.currentTeamIdx].score += change;
+        state.usedQuestions[state.currentQuestion.key] = true;
+        updateQuestionsRemaining();
+        saveState();
+        showScorePop(change);
+        correct ? playTone(523, 0.1, "sine") : playTone(110, 0.15, "sawtooth");
+        closeQuestionModal();
+        renderGame();
+        setTimeout(() => autoNextTeam(), 400);
+      }
+      function closeQuestionModal() {
+        document.getElementById("questionModal").classList.remove("open");
+      }
+
+      // ===================================================
+      // CHALLENGE MODAL
+      // ===================================================
+      function openChallengeModal() {
+        document.getElementById("challengeStep1").style.display = "block";
+        document.getElementById("challengeStep2").style.display = "none";
+        document.getElementById("challengeStep3").style.display = "none";
+        document.getElementById("cModalPts").textContent =
+          state.currentQuestion.pts + " pts";
+        document.getElementById("cModalQuestion").textContent = "";
+        document.getElementById("cModalAnswer").textContent = "";
+        document.getElementById("cModalAnswer").classList.remove("visible");
+        const rd = document.getElementById("challengeResultDisplay");
+        rd.classList.remove("visible");
+        rd.className = "challenge-result";
+        document.getElementById("cRevealBtn").style.display = "inline-flex";
+        document.getElementById("cCorrectBtn").style.display = "none";
+        document.getElementById("cIncorrectBtn").style.display = "none";
+        state.challengeOpponent = -1;
+        const grid = document.getElementById("challengeOpponentGrid");
+        grid.innerHTML = "";
+        state.teams.forEach((t, i) => {
+          if (i === state.currentTeamIdx) return;
+          grid.innerHTML += `<button class="team-select-btn" id="oppBtn${i}" onclick="selectOpponent(${i})">${escHtml(t.name)}<br><small style="color:var(--gray)">${t.score.toLocaleString()} pts</small></button>`;
+        });
+        document.getElementById("challengeModal").classList.add("open");
+        playTone(350, 0.08, "square");
+      }
+      function selectOpponent(idx) {
+        state.challengeOpponent = idx;
+        document
+          .querySelectorAll(".team-select-btn")
+          .forEach((b) => b.classList.remove("selected"));
+        document.getElementById(`oppBtn${idx}`).classList.add("selected");
+        setTimeout(() => {
+          document.getElementById("challengeStep1").style.display = "none";
+          document.getElementById("challengeStep2").style.display = "block";
+          document.getElementById("challengerBidLabel").textContent =
+            `${state.teams[state.currentTeamIdx].name} bid:`;
+          document.getElementById("opponentBidLabel").textContent =
+            `${state.teams[idx].name} bid:`;
+          document.getElementById("challengerBidInput").value = "";
+          document.getElementById("opponentBidInput").value = "";
+        }, 280);
+      }
+      function lockBids() {
+        const cb = Math.max(
+          0,
+          parseInt(document.getElementById("challengerBidInput").value) || 0,
+        );
+        const ob = Math.max(
+          0,
+          parseInt(document.getElementById("opponentBidInput").value) || 0,
+        );
+        let at, ab, ot, otb;
+        if (cb <= ob) {
+          at = state.currentTeamIdx;
+          ab = cb;
+          ot = state.challengeOpponent;
+          otb = ob;
+        } else {
+          at = state.challengeOpponent;
+          ab = ob;
+          ot = state.currentTeamIdx;
+          otb = cb;
+        }
+        state.answeringTeamIdx = at;
+        state.answeringBid = ab;
+        state.otherTeamIdx = ot;
+        state.otherBid = otb;
+        document.getElementById("challengeStep2").style.display = "none";
+        document.getElementById("challengeStep3").style.display = "block";
+        const Q = state.currentQuestion.pts;
+        document.getElementById("answeringTeamBanner").innerHTML =
+          `📢 <strong>${state.teams[at].name}</strong> must answer (lower bid: <strong>${ab}</strong>)<br>✔ Correct: <strong>+${Q + otb} pts</strong> · ${state.teams[ot].name} −${otb}<br>✖ Wrong: loses <strong>−${ab} pts</strong> · ${state.teams[ot].name} +${Q + ab}`;
+        document.getElementById("cModalQuestion").textContent =
+          state.currentQuestion.q;
+        document.getElementById("cModalAnswer").textContent =
+          state.currentQuestion.a;
+        playTone(440, 0.08, "sine");
+      }
+      function revealChallengeAnswer() {
+        document.getElementById("cModalAnswer").classList.add("visible");
+        document.getElementById("cRevealBtn").style.display = "none";
+        document.getElementById("cCorrectBtn").style.display = "inline-flex";
+        document.getElementById("cIncorrectBtn").style.display = "inline-flex";
+      }
+      function challengeOutcome(correct) {
+        const Q = state.currentQuestion.pts;
+        const at = state.answeringTeamIdx;
+        const ot = state.otherTeamIdx;
+        const ab = state.answeringBid;
+        const otb = state.otherBid;
+        const rd = document.getElementById("challengeResultDisplay");
+        if (correct) {
+          state.teams[at].score += Q + otb;
+          state.teams[ot].score -= otb;
+          rd.className = "challenge-result visible correct-result";
+          rd.innerHTML = `<div class="breakdown-title">✅ CORRECT!</div><div class="breakdown-grid"><div class="bd-label">${state.teams[at].name}</div><div class="bd-val pos">+${(Q + otb).toLocaleString()}</div><div class="bd-label">${state.teams[ot].name}</div><div class="bd-val neg">−${otb.toLocaleString()}</div></div>`;
+          showScorePop(Q + otb);
+          playTone(523, 0.1, "sine");
+        } else {
+          state.teams[at].score -= ab;
+          state.teams[ot].score += Q + ab;
+          rd.className = "challenge-result visible incorrect-result";
+          rd.innerHTML = `<div class="breakdown-title">❌ INCORRECT</div><div class="breakdown-grid"><div class="bd-label">${state.teams[at].name}</div><div class="bd-val neg">−${ab.toLocaleString()}</div><div class="bd-label">${state.teams[ot].name}</div><div class="bd-val pos">+${(Q + ab).toLocaleString()}</div></div>`;
+          playTone(110, 0.15, "sawtooth");
+        }
+        state.usedQuestions[state.currentQuestion.key] = true;
+        updateQuestionsRemaining();
+        saveState();
+        setTimeout(() => {
+          document.getElementById("challengeModal").classList.remove("open");
+          renderGame();
+          setTimeout(() => autoNextTeam(), 400);
+        }, 2200);
+      }
+      function closeChallengeModal() {
+        document.getElementById("challengeModal").classList.remove("open");
+      }
+      function showRules() {
+        document.getElementById("rulesModal").classList.add("open");
+      }
+      function toggleFullscreen() {
+        if (!document.fullscreenElement)
+          document.documentElement.requestFullscreen().catch(() => {});
+        else document.exitFullscreen();
+      }
+      function confirmReset() {
+        if (confirm("Reset game? All progress will be lost.")) resetGame();
+      }
+      function resetGame() {
+        localStorage.removeItem("bioShowdown_v1");
+        location.reload();
+      }
+      function showScorePop(change) {
+        const el = document.createElement("div");
+        el.className = "score-pop " + (change > 0 ? "positive" : "negative");
+        el.textContent = (change > 0 ? "+" : "") + change.toLocaleString();
+        el.style.left = Math.random() * 60 + 20 + "%";
+        el.style.top = "40%";
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1300);
+      }
+
+      // ===================================================
+      // MUTATION MARKET
+      // ===================================================
+      function goToMutationMarket() {
+        state.phase = "mutationMarket";
+        saveState();
+        showScreen("mutationMarketScreen");
+        renderMutationMarket();
+      }
+      function returnToGame() {
+        state.phase = "game";
+        saveState();
+        showScreen("gameScreen");
+        renderGame();
+      }
+      function renderMutationMarket() {
+        renderPowerShop();
+        renderMarketSidebar();
+      }
+      function renderPowerShop() {
+        const bi = state.mutationMarketBuyer;
+        const bs = state.teams[bi] ? state.teams[bi].score : 0;
+        document.getElementById("powerShopGrid").innerHTML =
+          MUTATION_POWERS.map(
+            (p) => `
+    <div class="power-card">
+      <div class="power-card-header"><div class="power-icon">${p.icon}</div><div class="power-cost">${p.cost} pts</div></div>
+      <div class="power-name">${p.name}</div>
+      <div class="power-desc">${p.desc}</div>
+      <button class="btn btn-bio" style="width:100%;padding:10px !important;font-size:.85rem !important;" onclick="buyPower('${p.key}')" ${bs < p.cost ? "disabled" : ""}>
+        Buy for ${p.cost} pts
+      </button>
+    </div>`,
+          ).join("");
+      }
+      function renderMarketSidebar() {
+        const sidebar = document.getElementById("mutationMarketSidebar");
+        sidebar.innerHTML =
+          `<h3 style="font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);margin-bottom:12px;">Teams</h3>` +
+          state.teams
+            .map((t, i) => {
+              const powers = state.teamPowers[i] || [];
+              return `<div class="market-team-card ${i === state.mutationMarketBuyer ? "active-buyer" : ""}" onclick="selectMarketBuyer(${i})">
+        <h4>${escHtml(t.name)}</h4>
+        <div class="market-score">${t.score.toLocaleString()} pts</div>
+        ${powers.length ? `<div class="purchased-powers-list">${powers.map((p) => `<div class="power-tag">${p.icon} ${p.name}</div>`).join("")}</div>` : ""}
+      </div>`;
+            })
+            .join("");
+      }
+      function selectMarketBuyer(idx) {
+        state.mutationMarketBuyer = idx;
+        renderPowerShop();
+        renderMarketSidebar();
+      }
+      function buyPower(key) {
+        const bi = state.mutationMarketBuyer;
+        const p = MUTATION_POWERS.find((x) => x.key === key);
+        if (!p || state.teams[bi].score < p.cost) {
+          alert("Not enough points!");
+          return;
+        }
+        state.teams[bi].score -= p.cost;
+        if (!state.teamPowers[bi]) state.teamPowers[bi] = [];
+        state.teamPowers[bi].push({ ...p });
+        playTone(523, 0.1, "sine");
+        setTimeout(() => playTone(659, 0.1, "sine"), 120);
+        setTimeout(() => playTone(784, 0.1, "sine"), 240);
+        showScorePop(-p.cost);
+        saveState();
+        renderPowerShop();
+        renderMarketSidebar();
+      }
+
+      // ===================================================
+      // POWER ROUND
+      // ===================================================
+      function startPowerRound() {
+        state.phase = "powerRound";
+        state.prUsed = {};
+        state.prCurrentQuestion = null;
+        state.activePowerEffect = null;
+        state.activePowerTeamIdx = -1;
+        saveState();
+        showScreen("powerRoundScreen");
+        renderPowerRound();
+      }
+      function renderPowerRound() {
+        renderPRScoreboard();
+        renderPRSelector();
+        renderTeamPowersList();
+      }
+      function renderPRScoreboard() {
+        const sorted = [...state.teams]
+          .map((t, i) => ({ ...t, idx: i }))
+          .sort((a, b) => b.score - a.score);
+        document.getElementById("prScoreboard").innerHTML = sorted
+          .map(
+            (t, rank) => `
+    <div class="score-card ${rank === 0 && sorted.length > 1 ? "leading" : ""}">
+      ${rank === 0 && sorted.length > 1 ? '<div class="rank-badge">👑</div>' : ""}
+      <div class="team-name-display">${escHtml(t.name)}</div>
+      <div class="team-score">${t.score.toLocaleString()}</div>
+    </div>`,
+          )
+          .join("");
+      }
+      function renderPRSelector() {
+        document.getElementById("prQuestionSelector").innerHTML =
+          POWER_ROUND_QUESTIONS.map((q) => {
+            const used = !!state.prUsed[q.num];
+            return `<button class="btn ${used ? "btn-gray" : "btn-primary"}" onclick="${used ? "" : ` loadPRQuestion(${q.num})`}" style="opacity:${used ? 0.4 : 1};min-width:56px;padding:10px 14px !important;font-size:.85rem !important;" ${used ? "disabled" : ""}>
+      Q${q.num}<br><small style="font-size:.7rem;">${q.pts}p</small>
+    </button>`;
+          }).join("");
+      }
+      function loadPRQuestion(num) {
+        const q = POWER_ROUND_QUESTIONS.find((x) => x.num === num);
+        if (!q || state.prUsed[num]) return;
+        state.prCurrentQuestion = q;
+        state.activePowerEffect = null;
+        state.activePowerTeamIdx = -1;
+        hidePowerBanner();
+        document.getElementById("prQuestionCard").innerHTML = `
+    <div class="pr-q-num">Question ${q.num} · ${q.pts} pts</div>
+    <div class="pr-q-text">${escHtml(q.q)}</div>
+    <div class="pr-answer-box" id="prAnswerBox">${escHtml(q.a)}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      <button class="btn btn-gray" onclick="revealPRAnswer()">👁 REVEAL ANSWER</button>
+    </div>
+    <div id="prScoring" style="display:none;">
+      <div style="font-size:.8rem;color:var(--gray);margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em;">Award to team:</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${state.teams
+          .map(
+            (_, i) => `
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-success" onclick="prAwardTeam(${i},true)" style="padding:8px 14px !important;font-size:.82rem !important;">✔ ${escHtml(state.teams[i].name)}</button>
+            <button class="btn btn-danger" onclick="prAwardTeam(${i},false)" style="padding:8px 14px !important;font-size:.82rem !important;">✖</button>
+          </div>`,
+          )
+          .join("")}
+      </div>
+    </div>`;
+      }
+      function revealPRAnswer() {
+        document.getElementById("prAnswerBox").classList.add("visible");
+        document.getElementById("prScoring").style.display = "block";
+      }
+      function prAwardTeam(teamIdx, correct) {
+        if (!state.prCurrentQuestion) return;
+        const q = state.prCurrentQuestion;
+        let pts = q.pts;
+        let extraMsg = "";
+        const effect = state.activePowerEffect,
+          etIdx = state.activePowerTeamIdx;
+        if (effect && etIdx === teamIdx) {
+          if (correct) {
+            if (effect === "double") {
+              pts *= 2;
+              extraMsg = " (×2 Hyper Mutation!)";
+            }
+            if (effect === "triple") {
+              pts *= 3;
+              extraMsg = " (×3 Master Mutation!)";
+            }
+            if (effect === "steal") {
+              const others = state.teams.filter((_, i) => i !== teamIdx);
+              if (others.length > 0) {
+                const idx = state.teams.findIndex((_, i) => i !== teamIdx);
+                if (idx >= 0) {
+                  state.teams[idx].score -= 200;
+                  extraMsg = ` + stole 200pts from ${state.teams[idx].name}!`;
+                }
+              }
+            }
+          } else {
+            if (effect === "shield") {
+              pts = 0;
+              extraMsg = " (Cell Shield saved you!)";
+            }
+            if (effect === "repair") {
+              pts = Math.floor(pts * 0.5);
+              extraMsg = " (DNA Repair: half penalty)";
+            }
+          }
+          state.activePowerEffect = null;
+          state.activePowerTeamIdx = -1;
+          hidePowerBanner();
+        }
+        const change = correct ? pts : -pts;
+        state.teams[teamIdx].score += change;
+        state.prUsed[q.num] = true;
+        showScorePop(change);
+        correct ? playTone(523, 0.1, "sine") : playTone(110, 0.15, "sawtooth");
+        const card = document.getElementById("prQuestionCard");
+        if (card)
+          card.innerHTML += `<div style="margin-top:14px;padding:12px;background:rgba(${correct ? "34,197,94" : "239,68,68"},.08);border:1px solid rgba(${correct ? "34,197,94" : "239,68,68"},.25);border-radius:10px;font-size:.9rem;color:var(--${correct ? "success" : "danger"});">
+    ${correct ? "✅" : "❌"} ${escHtml(state.teams[teamIdx].name)}: ${correct ? "+" : "-"}${pts}pts${extraMsg}
+  </div>`;
+        renderPRScoreboard();
+        renderPRSelector();
+        saveState();
+        if (Object.keys(state.prUsed).length >= 10)
+          setTimeout(() => {
+            if (
+              confirm(
+                "Power Round complete! Proceed to the Superhuman Battle Arena?",
+              )
+            )
+              goToAllianceSetup();
+          }, 800);
+      }
+      function activatePower(teamIdx, powerKey) {
+        if (
+          state.teamPowersUsed[teamIdx] &&
+          state.teamPowersUsed[teamIdx][powerKey]
+        ) {
+          alert("Power already used!");
+          return;
+        }
+        const powers = state.teamPowers[teamIdx] || [];
+        const pwr = powers.find((p) => p.key === powerKey);
+        if (!pwr) return;
+        state.activePowerEffect = pwr.effect;
+        state.activePowerTeamIdx = teamIdx;
+        if (!state.teamPowersUsed[teamIdx]) state.teamPowersUsed[teamIdx] = {};
+        state.teamPowersUsed[teamIdx][powerKey] = true;
+        showPowerBanner(pwr, teamIdx);
+        renderTeamPowersList();
+        playTone(440, 0.08, "sine");
+        setTimeout(() => playTone(660, 0.1, "sine"), 150);
+        setTimeout(() => playTone(880, 0.12, "sine"), 300);
+      }
+      function showPowerBanner(pwr, teamIdx) {
+        const b = document.getElementById("powerActiveBanner");
+        b.classList.add("visible");
+        b.innerHTML = `<div style="font-size:.7rem;color:var(--bio2);text-transform:uppercase;letter-spacing:.15em;margin-bottom:4px;">Power Active</div>
+    <div style="font-size:1.2rem;font-weight:800;color:var(--gold);">${pwr.icon} ${pwr.name}</div>
+    <div style="font-size:.82rem;color:var(--accent2);margin-top:4px;">${pwr.desc} — ${state.teams[teamIdx].name}</div>`;
+      }
+      function hidePowerBanner() {
+        const b = document.getElementById("powerActiveBanner");
+        if (b) {
+          b.classList.remove("visible");
+          b.innerHTML = "";
+        }
+      }
+      function renderTeamPowersList() {
+        document.getElementById("teamPowersList").innerHTML = state.teams
+          .map((t, i) => {
+            const powers = state.teamPowers[i] || [];
+            if (!powers.length)
+              return `<div class="team-power-block"><h4>${escHtml(t.name)}</h4><div style="font-size:.78rem;color:var(--gray);">No powers</div></div>`;
+            return `<div class="team-power-block"><h4>${escHtml(t.name)}</h4>
+      ${powers
+        .map((p) => {
+          const used =
+            state.teamPowersUsed[i] && state.teamPowersUsed[i][p.key];
+          return `<button class="btn ${used ? "btn-gray" : "btn-bio"} power-activate-btn" onclick="${used ? "" : ` activatePower(${i},'${p.key}')`}" ${used ? "disabled" : ""}>
+          <span>${p.icon} ${p.name}</span><span style="font-size:.7rem;">${used ? "USED" : "ACTIVATE"}</span>
+        </button>`;
+        })
+        .join("")}
+    </div>`;
+          })
+          .join("");
+      }
+
+      // ===================================================
+      // ALLIANCE SETUP
+      // ===================================================
+      function goToAllianceSetup() {
+        state.phase = "allianceSetup";
+        const half = Math.ceil(state.teams.length / 2);
+        state.alliances = [
+          {
+            name: "Alliance A",
+            teams: Array.from({ length: half }, (_, i) => i),
+            side: null,
+            score: state.teams.slice(0, half).reduce((s, t) => s + t.score, 0),
+            stats: { hp: 100, attack: 15, defense: 10, speed: 10, regen: 0 },
+            powers: [],
+            mp: 0,
+          },
+          {
+            name: "Alliance B",
+            teams: Array.from(
+              { length: state.teams.length - half },
+              (_, i) => i + half,
+            ),
+            side: null,
+            score: state.teams.slice(half).reduce((s, t) => s + t.score, 0),
+            stats: { hp: 100, attack: 15, defense: 10, speed: 10, regen: 0 },
+            powers: [],
+            mp: 0,
+          },
+        ];
+        state.alliances[0].mp = Math.max(
+          20,
+          Math.floor(state.alliances[0].score / 100),
+        );
+        state.alliances[1].mp = Math.max(
+          20,
+          Math.floor(state.alliances[1].score / 100),
+        );
+        state.allianceSides = [null, null];
+        saveState();
+        showScreen("allianceSetupScreen");
+        renderAllianceSetup();
+      }
+      function renderAllianceSetup() {
+        document.getElementById("alliancesGrid").innerHTML = state.alliances
+          .map((al, ai) => {
+            const teamNames = al.teams
+              .map((i) => (state.teams[i] ? state.teams[i].name : "?"))
+              .join(" + ");
+            const side = state.allianceSides[ai];
+            return `<div class="alliance-card alliance-${ai === 0 ? "a" : "b"}">
+      <div class="alliance-name" style="color:${ai === 0 ? "var(--accent2)" : "#d8b4fe"}">${al.name}</div>
+      <div class="alliance-teams">${teamNames}</div>
+      <div class="alliance-score-display">${al.score.toLocaleString()} pts → <span style="color:var(--bio2);">${al.mp} MP</span></div>
+      <div style="font-size:.8rem;color:var(--gray);margin-bottom:14px;">Choose your biological side:</div>
+      <div class="side-choice">
+        <button class="btn side-btn mitosis-btn ${side === "mitosis" ? "selected-side" : ""}" onclick="chooseSide(${ai},'mitosis')">🔵 MITOSIS</button>
+        <button class="btn side-btn meiosis-btn ${side === "meiosis" ? "selected-side" : ""}" onclick="chooseSide(${ai},'meiosis')">🟣 MEIOSIS</button>
+      </div>
+    </div>`;
+          })
+          .join("");
+      }
+      function chooseSide(ai, side) {
+        state.allianceSides[ai] = side;
+        state.alliances[ai].side = side;
+        saveState();
+        renderAllianceSetup();
+      }
+      function proceedToBuild() {
+        if (!state.allianceSides[0] || !state.allianceSides[1]) {
+          alert("Both alliances must choose a side first!");
+          return;
+        }
+        state.currentBuilderAlliance = 0;
+        state.phase = "superhumanBuilder";
+        saveState();
+        showScreen("superhumanBuilderScreen");
+        renderBuilder();
+      }
+
+      // ===================================================
+      // SUPERHUMAN BUILDER
+      // ===================================================
+      function renderBuilder() {
+        const ai = state.currentBuilderAlliance;
+        const al = state.alliances[ai];
+        const side = al.side;
+        const powers = side === "mitosis" ? MITOSIS_POWERS : MEIOSIS_POWERS;
+        document.getElementById("builderTitle").textContent =
+          `🔬 ${al.name} — Build Your Superhuman`;
+        document.getElementById("builderSubtitle").textContent =
+          `${side === "mitosis" ? "🔵 MITOSIS" : "🟣 MEIOSIS"} · ${al.mp} Mutation Points remaining`;
+        document.getElementById("mpRemaining").textContent = al.mp;
+        document.getElementById("builderShopTitle").textContent =
+          `${side === "mitosis" ? "🔵 Mitosis" : "🟣 Meiosis"} Powers`;
+        document.getElementById("superPowerGrid").innerHTML = powers
+          .map(
+            (p) => `
+    <div class="super-power-card">
+      <div class="spcard-top"><span style="font-size:1.5rem;">${p.icon}</span><span class="sp-cost">${p.cost} MP</span></div>
+      <div style="font-size:.9rem;font-weight:700;margin-bottom:4px;">${p.name}</div>
+      <div style="font-size:.78rem;color:var(--gray);margin-bottom:10px;">${p.desc}</div>
+      <button class="btn btn-bio" style="width:100%;padding:8px !important;font-size:.8rem !important;" onclick="buySuperpow(${ai},'${p.key}')" ${al.mp < p.cost ? "disabled" : ""}>
+        Buy ${p.cost} MP
+      </button>
+    </div>`,
+          )
+          .join("");
+        updateBuilderStats(ai);
+        renderBuilderPurchased(ai);
+      }
+      function buySuperpow(ai, key) {
+        const al = state.alliances[ai];
+        const side = al.side;
+        const powers = side === "mitosis" ? MITOSIS_POWERS : MEIOSIS_POWERS;
+        const p = powers.find((x) => x.key === key);
+        if (!p || al.mp < p.cost) return;
+        al.mp -= p.cost;
+        al.stats[p.stat] = (al.stats[p.stat] || 0) + p.val;
+        al.powers.push({ ...p });
+        playTone(523, 0.1, "sine");
+        setTimeout(() => playTone(784, 0.12, "sine"), 150);
+        saveState();
+        renderBuilder();
+      }
+      function updateBuilderStats(ai) {
+        const st = state.alliances[ai].stats;
+        const maxAtk = 50,
+          maxDef = 40,
+          maxSpd = 60,
+          maxRegen = 20;
+        document.getElementById("statHpVal").textContent = st.hp;
+        document.getElementById("statHpBar").style.width =
+          (st.hp / 200) * 100 + "%";
+        document.getElementById("statAtkVal").textContent = st.attack;
+        document.getElementById("statAtkBar").style.width =
+          Math.min(100, (st.attack / maxAtk) * 100) + "%";
+        document.getElementById("statDefVal").textContent = st.defense;
+        document.getElementById("statDefBar").style.width =
+          Math.min(100, (st.defense / maxDef) * 100) + "%";
+        document.getElementById("statSpdVal").textContent = st.speed;
+        document.getElementById("statSpdBar").style.width =
+          Math.min(100, (st.speed / maxSpd) * 100) + "%";
+        document.getElementById("statRegenVal").textContent = st.regen || 0;
+        document.getElementById("statRegenBar").style.width =
+          Math.min(100, ((st.regen || 0) / maxRegen) * 100) + "%";
+      }
+      function renderBuilderPurchased(ai) {
+        const list = document.getElementById("builderPurchasedList");
+        const powers = state.alliances[ai].powers;
+        list.innerHTML = powers.length
+          ? powers
+              .map((p) => `<div class="power-tag">${p.icon} ${p.name}</div>`)
+              .join("")
+          : '<span style="font-size:.8rem;color:var(--gray);">None yet</span>';
+      }
+      function finishBuild() {
+        if (state.currentBuilderAlliance === 0) {
+          state.currentBuilderAlliance = 1;
+          saveState();
+          renderBuilder();
+        } else startBattle();
+      }
+
+      // ===================================================
+      // BATTLE
+      // ===================================================
+      function startBattle() {
+        state.phase = "battle";
+        state.battleHP = [
+          state.alliances[0].stats.hp,
+          state.alliances[1].stats.hp,
+        ];
+        state.battleRound = 1;
+        state.battleTurn = 0;
+        state.battleLog = [];
+        saveState();
+        showScreen("battleScreen");
+        renderBattle();
+      }
+      function renderBattle() {
+        renderBattleArena();
+        renderBattleActions();
+        renderBattleLog();
+        document.getElementById("battleTurnBadge").textContent =
+          `Round ${state.battleRound} · ${state.alliances[state.battleTurn].name}'s Turn`;
+      }
+      function hpFillClass(pct) {
+        return pct > 50 ? "" : pct > 25 ? " hp-warning" : " hp-danger";
+      }
+      function renderBattleArena() {
+        const [a0, a1] = state.alliances;
+        const hp0 = Math.max(0, state.battleHP[0]),
+          hp1 = Math.max(0, state.battleHP[1]);
+        function sideHtml(al, alIdx, hp) {
+          const maxHp = al.stats.hp;
+          const pct = Math.round((hp / maxHp) * 100);
+          const isActive = state.battleTurn === alIdx;
+          const side = al.side;
+          const badge =
+            side === "mitosis"
+              ? '<span class="fighter-side-badge mitosis-badge">MITOSIS</span>'
+              : '<span class="fighter-side-badge meiosis-badge">MEIOSIS</span>';
+          const teamNames = al.teams
+            .map((i) => (state.teams[i] ? state.teams[i].name : "?"))
+            .join(" & ");
+          return `<div class="battle-side ${isActive ? "active-fighter" : ""}">
+      ${badge}<div class="fighter-name">${al.name}</div>
+      <div style="font-size:.78rem;color:var(--gray);margin-bottom:12px;">${teamNames}</div>
+      <div class="hp-bar-container">
+        <div class="hp-label"><span>❤️ HP</span><span>${hp}/${maxHp}</span></div>
+        <div class="hp-bar-track"><div class="hp-bar-fill${hpFillClass(pct)}" style="width:${pct}%;"></div></div>
+      </div>
+      <div class="fighter-stats-mini">
+        <div class="fstat"><div class="fstat-label">⚔️ Atk</div><div class="fstat-val">${al.stats.attack}</div></div>
+        <div class="fstat"><div class="fstat-label">🛡 Def</div><div class="fstat-val">${al.stats.defense}</div></div>
+        <div class="fstat"><div class="fstat-label">💨 Spd</div><div class="fstat-val">${al.stats.speed}</div></div>
+        <div class="fstat"><div class="fstat-label">🔄 Regen</div><div class="fstat-val">${al.stats.regen || 0}/turn</div></div>
+      </div>
+      <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+        ${al.powers.map((p) => `<div class="power-tag">${p.icon} ${p.name}</div>`).join("")}
+      </div>
+    </div>`;
+        }
+        document.getElementById("battleArena").innerHTML =
+          sideHtml(a0, 0, hp0) +
+          `<div class="battle-vs">VS</div>` +
+          sideHtml(a1, 1, hp1);
+      }
+      function renderBattleActions() {
+        const at = state.battleTurn;
+        document.getElementById("battleActionBtns").innerHTML = `
+    <div style="font-size:.8rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.15em;width:100%;text-align:center;margin-bottom:6px;">${state.alliances[at].name}'s Turn — Choose Action:</div>
+    <button class="btn btn-danger" onclick="battleAction('attack')">⚔️ Attack</button>
+    <button class="btn btn-bio" onclick="battleAction('special')">✨ Special Ability</button>
+    <button class="btn btn-success" onclick="battleAction('heal')">❤️ Heal</button>
+    <button class="btn btn-gold" onclick="battleAction('ultimate')">🌟 Ultimate</button>`;
+      }
+      function battleAction(type) {
+        const ai = state.battleTurn,
+          di = 1 - ai;
+        const att = state.alliances[ai],
+          def = state.alliances[di];
+        const atkStat = att.stats.attack,
+          defStat = def.stats.defense;
+        let dmg = 0,
+          healAmt = 0;
+
+        if (att.stats.regen > 0) {
+          const rg = att.stats.regen;
+          state.battleHP[ai] = Math.min(att.stats.hp, state.battleHP[ai] + rg);
+          logBattle(`🔄 ${att.name} regenerates ${rg} HP.`, "info");
+        }
+
+        if (type === "attack") {
+          const crit = Math.random() < 0.15 + att.stats.speed / 200;
+          dmg = Math.max(
+            1,
+            atkStat -
+              Math.floor(defStat * 0.35) +
+              Math.floor(Math.random() * 6),
+          );
+          if (crit) {
+            dmg = Math.floor(dmg * 1.5);
+            logBattle(
+              `💥 CRITICAL HIT! ⚔️ ${att.name} attacks for ${dmg} damage!`,
+              "critical",
+            );
+          } else
+            logBattle(
+              `⚔️ ${att.name} attacks ${def.name} for ${dmg} damage!`,
+              "bad",
+            );
+          state.battleHP[di] = Math.max(0, state.battleHP[di] - dmg);
+          playTone(220, 0.15, "sawtooth");
+          if (crit) setTimeout(() => playTone(880, 0.1, "sine"), 100);
+          showBattlePop(dmg, false);
+        } else if (type === "special") {
+          const hasBurst = att.powers.some((p) => p.key === "burst");
+          const hasClone = att.powers.some((p) => p.key === "clone");
+          const hasChaos = att.powers.some((p) => p.key === "chaos");
+          if (hasChaos) {
+            const r = Math.random();
+            if (r < 0.4) {
+              dmg = Math.floor(atkStat * 2.2);
+              logBattle(
+                `🧪 CHROMOSOME CHAOS — Devastating hit for ${dmg}!`,
+                "critical",
+              );
+            } else if (r < 0.7) {
+              dmg = Math.floor(atkStat * 0.7);
+              logBattle(`🧪 Chaos misfires — only ${dmg} damage!`, "bad");
+            } else {
+              const self = Math.floor(atkStat * 0.4);
+              state.battleHP[ai] = Math.max(0, state.battleHP[ai] - self);
+              dmg = Math.floor(atkStat * 1.5);
+              logBattle(
+                `🧪 Chaos backfires! Self-deals ${self}, but hits ${def.name} for ${dmg}!`,
+                "critical",
+              );
+            }
+          } else if (hasClone && Math.random() < 0.45) {
+            const d1 = Math.floor(atkStat * 1.2),
+              d2 = Math.max(1, Math.floor(d1 * 0.7));
+            state.battleHP[di] = Math.max(0, state.battleHP[di] - d1 - d2);
+            logBattle(
+              `🔄 CLONE SURGE! Two hits: ${d1} + ${d2} = ${d1 + d2} damage!`,
+              "critical",
+            );
+            showBattlePop(d1 + d2, false);
+            dmg = 0;
+          } else if (hasBurst && Math.random() < 0.6) {
+            dmg = Math.floor(atkStat * 1.8);
+            logBattle(
+              `🧬 MUTATION BURST — Critical strike for ${dmg}!`,
+              "critical",
+            );
+          } else {
+            dmg = Math.max(
+              1,
+              Math.floor(atkStat * 1.25) - Math.floor(defStat * 0.25),
+            );
+            logBattle(
+              `✨ ${att.name} uses special ability for ${dmg} damage!`,
+              "bad",
+            );
+          }
+          if (dmg > 0) {
+            state.battleHP[di] = Math.max(0, state.battleHP[di] - dmg);
+            showBattlePop(dmg, false);
+          }
+          playTone(523, 0.1, "sine");
+          setTimeout(() => playTone(880, 0.12, "sine"), 150);
+        } else if (type === "heal") {
+          const hasRepair = att.powers.some((p) => p.key === "repair");
+          const hasDiverse = att.powers.some((p) => p.key === "diverse");
+          healAmt =
+            Math.floor(att.stats.hp * 0.15) +
+            (hasRepair ? 8 : 0) +
+            (hasDiverse ? Math.floor(Math.random() * 10) : 0);
+          state.battleHP[ai] = Math.min(
+            att.stats.hp,
+            state.battleHP[ai] + healAmt,
+          );
+          logBattle(`❤️ ${att.name} heals for ${healAmt} HP!`, "good");
+          playTone(659, 0.1, "sine");
+          setTimeout(() => playTone(784, 0.1, "sine"), 120);
+          showBattlePop(healAmt, true);
+        } else if (type === "ultimate") {
+          const hasEvolve = att.powers.some((p) => p.key === "evolve");
+          const hasArmor = att.powers.some((p) => p.key === "armor");
+          if (hasEvolve && Math.random() < 0.7) {
+            const bonus = Math.floor(Math.random() * 15) + 10;
+            att.stats.attack += bonus;
+            dmg = Math.floor(atkStat * 2.5);
+            state.battleHP[di] = Math.max(0, state.battleHP[di] - dmg);
+            logBattle(
+              `🌪 EVOLUTION LEAP! Attack +${bonus} permanently. Deals ${dmg} damage!`,
+              "critical",
+            );
+          } else if (hasArmor) {
+            healAmt = Math.floor(att.stats.hp * 0.22);
+            state.battleHP[ai] = Math.min(
+              att.stats.hp,
+              state.battleHP[ai] + healAmt,
+            );
+            dmg = Math.floor(atkStat * 1.5);
+            state.battleHP[di] = Math.max(0, state.battleHP[di] - dmg);
+            logBattle(
+              `🧱 CELLULAR ARMOR — heals ${healAmt} HP + deals ${dmg}!`,
+              "good",
+            );
+          } else {
+            dmg = Math.floor((atkStat + defStat) * 0.75 + Math.random() * 15);
+            state.battleHP[di] = Math.max(0, state.battleHP[di] - dmg);
+            logBattle(
+              `🌟 ULTIMATE blasts ${def.name} for ${dmg} massive damage!`,
+              "critical",
+            );
+          }
+          showBattlePop(dmg > 0 ? dmg : healAmt || 0, dmg === 0 && healAmt > 0);
+          playTone(220, 0.05, "sawtooth");
+          setTimeout(() => playTone(440, 0.1, "square"), 100);
+          setTimeout(() => playTone(880, 0.15, "sine"), 250);
+        }
+
+        state.battleRound++;
+        state.battleTurn = di;
+        saveState();
+        if (state.battleHP[0] <= 0 || state.battleHP[1] <= 0)
+          setTimeout(() => endBattle(), 600);
+        else renderBattle();
+      }
+      function logBattle(text, cls = "") {
+        state.battleLog.push({ text, cls });
+        if (state.battleLog.length > 20) state.battleLog.shift();
+        renderBattleLog();
+      }
+      function renderBattleLog() {
+        const log = document.getElementById("battleLog");
+        log.innerHTML = (state.battleLog || [])
+          .map(
+            (e) => `<div class="log-entry ${e.cls}">${escHtml(e.text)}</div>`,
+          )
+          .join("");
+        log.scrollTop = log.scrollHeight;
+      }
+      function showBattlePop(val, isHeal) {
+        const el = document.createElement("div");
+        el.className = isHeal ? "heal-pop" : "damage-pop";
+        el.textContent = (isHeal ? "+" : "-") + val;
+        el.style.left = Math.random() * 60 + 20 + "%";
+        el.style.top = "25%";
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1600);
+      }
+      function endBattle() {
+        const winner = state.battleHP[0] > state.battleHP[1] ? 0 : 1;
+        state.phase = "battleWinner";
+        state.battleWinner = winner;
+        saveState();
+        showScreen("battleWinnerScreen");
+        renderBattleWinner();
+        launchConfetti();
+        playTone(523, 0.15, "sine");
+        setTimeout(() => playTone(659, 0.15, "sine"), 200);
+        setTimeout(() => playTone(784, 0.15, "sine"), 400);
+        setTimeout(() => playTone(1047, 0.2, "sine"), 600);
+      }
+      function renderBattleWinner() {
+        const wi = state.battleWinner || 0;
+        const winner = state.alliances[wi];
+        const loser = state.alliances[1 - wi];
+        document.getElementById("battleWinnerName").textContent = winner.name;
+        const teamNames = winner.teams
+          .map((i) => (state.teams[i] ? state.teams[i].name : "?"))
+          .join(" & ");
+        document.getElementById("finalStatsGrid").innerHTML = `
+    <div class="final-stat-card"><h4>Winning Alliance</h4><div class="stat-val">${escHtml(winner.name)}</div><div style="font-size:.8rem;color:var(--gray);margin-top:4px;">${escHtml(teamNames)}</div></div>
+    <div class="final-stat-card"><h4>Side Chosen</h4><div class="stat-val">${winner.side === "mitosis" ? "🔵 MITOSIS" : "🟣 MEIOSIS"}</div></div>
+    <div class="final-stat-card"><h4>Remaining HP</h4><div class="stat-val">${Math.max(0, state.battleHP[wi])}</div></div>
+    <div class="final-stat-card"><h4>Powers Used</h4><div class="stat-val">${winner.powers.length}</div></div>`;
+        const sorted = [...state.teams]
+          .map((t, i) => ({ ...t, idx: i }))
+          .sort((a, b) => b.score - a.score);
+        document.getElementById("fullScoreTable").innerHTML = `
+    <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.15em;color:var(--gray);margin-bottom:12px;">Final Team Scores</div>
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+    ${sorted
+      .map(
+        (
+          t,
+          i,
+        ) => `<div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.04);">
+      <span style="color:${i === 0 ? "var(--gold)" : "var(--text)"};">${["🥇", "🥈", "🥉"][i] || "  "} ${escHtml(t.name)}</span>
+      <span style="color:var(--accent2);font-weight:700;">${t.score.toLocaleString()}</span>
+    </div>`,
+      )
+      .join("")}
+    </div>`;
+      }
+
+      // ===================================================
+      // CONFETTI
+      // ===================================================
+      function launchConfetti() {
+        const colors = [
+          "#f59e0b",
+          "#3b82f6",
+          "#22c55e",
+          "#ef4444",
+          "#8b5cf6",
+          "#ec4899",
+          "#10b981",
+        ];
+        for (let i = 0; i < 80; i++) {
+          setTimeout(() => {
+            const el = document.createElement("div");
+            el.className = "confetti-piece";
+            el.style.cssText = `left:${Math.random() * 100}%;width:${Math.random() * 8 + 4}px;height:${Math.random() * 10 + 6}px;background:${colors[Math.floor(Math.random() * colors.length)]};animation-duration:${Math.random() * 3 + 2}s;animation-delay:${Math.random() * 0.5}s;transform:rotate(${Math.random() * 360}deg);`;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 5500);
+          }, Math.random() * 1200);
+        }
+      }
+    </script>
+  </body>
+</html>
